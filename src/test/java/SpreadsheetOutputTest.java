@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 public class SpreadsheetOutputTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpreadsheetOutputTest.class);
@@ -20,8 +23,10 @@ public class SpreadsheetOutputTest {
             ClassLoader classLoader = (SpreadsheetOutputTest.class).getClassLoader();
             File file = new File(classLoader.getResource("example0.txt").getFile());
             stdin = new Scanner(file);
+            LOGGER.debug("Scanner is initialized");
         } catch (FileNotFoundException e) {
             LOGGER.error("File was not found", e);
+            fail("File was not found");
         }
     }
 
@@ -30,6 +35,7 @@ public class SpreadsheetOutputTest {
         SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
         spreadsheetInputReader.readInput();
         String[][] cells = spreadsheetInputReader.getCells();
+        assertNotNull("Array of cells is null", cells);
         SpreadsheetUtils.printArray(cells);
     }
 

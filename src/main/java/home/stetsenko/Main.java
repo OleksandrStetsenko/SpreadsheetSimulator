@@ -12,7 +12,7 @@ public class Main {
     private static Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        Scanner stdin = null;
+        Scanner stdin;
         try {
 
             ClassLoader classLoader = (Main.class).getClassLoader();
