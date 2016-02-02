@@ -54,8 +54,8 @@ public class RowImpl implements Row {
         return cells.get(colIndex);
     }
 
-    public short getLastCellNum()
-    {
+    @Override
+    public short getLastCellNum() {
         return cells.isEmpty() ? -1 : (short)(cells.lastKey() + 1);
     }
 

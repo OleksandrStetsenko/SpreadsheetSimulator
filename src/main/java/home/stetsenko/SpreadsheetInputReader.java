@@ -1,7 +1,9 @@
 package home.stetsenko;
 
 import home.stetsenko.model.cell.Cell;
+import home.stetsenko.model.cell.CellValue;
 import home.stetsenko.model.row.Row;
+import home.stetsenko.model.sheet.Sheet;
 import home.stetsenko.model.sheet.SheetImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ public class SpreadsheetInputReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpreadsheetInputReader.class);
 
     private String[][] cells;
+    private Sheet sheet;
     private Scanner stdin;
 
     public SpreadsheetInputReader(Scanner stdin) {
@@ -30,7 +33,7 @@ public class SpreadsheetInputReader {
             cells = new String[Integer.parseInt(values[0])][Integer.parseInt(values[1])];
 
             int i = 0;
-            SheetImpl sheet = new SheetImpl();
+            sheet = new SheetImpl();
             while (stdin.hasNextLine()) {
                 String line = stdin.nextLine();
                 String[] lineValues = line.split(SpreadsheetConstants.SEPARATOR, -1);
@@ -41,7 +44,7 @@ public class SpreadsheetInputReader {
                 for (String v : lineValues) {
 
                     Cell cell = row.createCell(j);
-                    //cell.getCellValue(v);
+                    cell.setCellValue(new CellValue(v));
 
                     cells[i][j] = v;
                     j++;
@@ -54,5 +57,9 @@ public class SpreadsheetInputReader {
 
     public String[][] getCells() {
         return cells;
+    }
+
+    public Sheet getSheet() {
+        return sheet;
     }
 }

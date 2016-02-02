@@ -25,12 +25,12 @@ public interface Cell {
     /**
      * Set a int value for the cell
      */
-    void setCellValue(int value);
+    void setCellValue(CellValue value);
 
     /**
      * Get a int value for the cell
      */
-    int getCellValue();
+    CellValue getCellValue();
 
     /**
      * Set a error value for the cell

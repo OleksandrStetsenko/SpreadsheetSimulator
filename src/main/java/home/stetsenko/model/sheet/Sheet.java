@@ -2,6 +2,8 @@ package home.stetsenko.model.sheet;
 
 import home.stetsenko.model.row.Row;
 
+import java.util.Iterator;
+
 public interface Sheet {
 
     /**
@@ -13,5 +15,15 @@ public interface Sheet {
      * Returns the row
      */
     Row getRow(int rowIndex);
+
+    /**
+     * Returns number of rows
+     */
+    int getNumberOfRows();
+
+    /**
+     *  Returns an iterator of the rows
+     */
+    Iterator<Row> rowIterator();
 
 }

@@ -1,6 +1,8 @@
 import home.stetsenko.SpreadsheetInputReader;
 import home.stetsenko.SpreadsheetUtils;
+import home.stetsenko.model.sheet.Sheet;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +33,22 @@ public class SpreadsheetOutputTest {
     }
 
     @Test
+    @Ignore
     public void testOutput() {
         SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
         spreadsheetInputReader.readInput();
         String[][] cells = spreadsheetInputReader.getCells();
         assertNotNull("Array of cells is null", cells);
         SpreadsheetUtils.printArray(cells);
+    }
+
+    @Test
+    public void testSheetOutput() {
+        SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
+        spreadsheetInputReader.readInput();
+        Sheet sheet = spreadsheetInputReader.getSheet();
+        assertNotNull("Array of cells is null", sheet);
+        SpreadsheetUtils.printSheet(sheet);
     }
 
 }

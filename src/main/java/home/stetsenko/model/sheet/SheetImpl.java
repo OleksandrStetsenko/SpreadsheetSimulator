@@ -5,6 +5,7 @@ import home.stetsenko.model.row.RowImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.TreeMap;
 
 public class SheetImpl implements Sheet {
@@ -22,5 +23,17 @@ public class SheetImpl implements Sheet {
     @Override
     public Row getRow(int rowIndex) {
         return rows.get(rowIndex);
+    }
+
+    @Override
+    public int getNumberOfRows() {
+        return rows.size();
+    }
+
+    @Override
+    public Iterator<Row> rowIterator() {
+        @SuppressWarnings("unchecked")
+        Iterator<Row> result = (Iterator<Row>)(Iterator<? extends Row>)rows.values().iterator();
+        return result;
     }
 }

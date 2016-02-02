@@ -7,7 +7,7 @@ public class CellImpl implements Cell {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CellImpl.class);
 
-    private int cellValue;
+    private CellValue cellValue;
     private CellType cellType;
     private CellReference cellReference;
     private FormulaError cellErrorValue;
@@ -33,12 +33,12 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void setCellValue(int cellValue) {
+    public void setCellValue(CellValue cellValue) {
         this.cellValue = cellValue;
     }
 
     @Override
-    public int getCellValue() {
+    public CellValue getCellValue() {
         return this.cellValue;
     }
 
