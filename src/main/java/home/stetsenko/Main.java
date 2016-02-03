@@ -1,5 +1,6 @@
 package home.stetsenko;
 
+import home.stetsenko.model.sheet.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,18 +13,17 @@ public class Main {
     private static Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        Scanner stdin;
         try {
 
             ClassLoader classLoader = (Main.class).getClassLoader();
             File file = new File(classLoader.getResource("example0.txt").getFile());
-            stdin = new Scanner(file);
+            Scanner stdin = new Scanner(file);
             //stdin = new Scanner(new BufferedInputStream(System.in));
             SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
             spreadsheetInputReader.readInput();
-            String[][] cells = spreadsheetInputReader.getCells();
+            Sheet sheet = spreadsheetInputReader.getSheet();
 
-            SpreadsheetUtils.printArray(cells);
+            SpreadsheetUtils.printSheet(sheet);
 
         } catch (FileNotFoundException e) {
             LOGGER.error("File was not found", e);
