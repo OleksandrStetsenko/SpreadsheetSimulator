@@ -6,56 +6,44 @@ import org.slf4j.LoggerFactory;
 public class CellValue {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CellValue.class);
-    private CellType cellType;
     private String textValue;
     private int numericValue;
-
-    private CellValue(CellType cellType, String textValue, int numericValue) {
-        this.textValue = textValue;
-        this.numericValue = numericValue;
-        this.cellType = cellType;
-    }
-
-    public CellValue(String textValue) {
-        this.cellType = CellType.CELL_TYPE_STRING;
-        this.textValue = textValue;
-    }
-
-    public CellValue(int numericValue) {
-        this.cellType = CellType.CELL_TYPE_NUMERIC;
-        this.numericValue = numericValue;
-    }
+    private String expressionValue;
+    private FormulaError cellErrorValue;
 
     public String getTextValue() {
         return textValue;
     }
 
-    public void setTextValue(String textValue) {
+    public CellValue setTextValue(String textValue) {
         this.textValue = textValue;
+        return this;
     }
 
     public int getNumericValue() {
         return numericValue;
     }
 
-    public void setNumericValue(int numericValue) {
+    public CellValue setNumericValue(int numericValue) {
         this.numericValue = numericValue;
+        return this;
     }
 
-    public CellType getCellType() {
-        return cellType;
+    public String getExpressionValue() {
+        return expressionValue;
     }
 
-    public void setCellType(CellType cellType) {
-        this.cellType = cellType;
+    public CellValue setExpressionValue(String expressionValue) {
+        this.expressionValue = expressionValue;
+        return this;
     }
 
-    @Override
-    public String toString() {
-        return "CellValue{" +
-                "cellType=" + cellType +
-                ", textValue='" + textValue + '\'' +
-                ", numericValue=" + numericValue +
-                '}';
+    public FormulaError getCellErrorValue() {
+        return cellErrorValue;
+    }
+
+    public CellValue setCellErrorValue(FormulaError cellErrorValue) {
+        this.cellErrorValue = cellErrorValue;
+        return this;
     }
 }

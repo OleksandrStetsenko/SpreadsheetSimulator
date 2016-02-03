@@ -33,16 +33,6 @@ public class SpreadsheetOutputTest {
     }
 
     @Test
-    @Ignore
-    public void testOutput() {
-        SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
-        spreadsheetInputReader.readInput();
-        String[][] cells = spreadsheetInputReader.getCells();
-        assertNotNull("Array of cells is null", cells);
-        SpreadsheetUtils.printArray(cells);
-    }
-
-    @Test
     public void testSheetOutput() {
         SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
         spreadsheetInputReader.readInput();

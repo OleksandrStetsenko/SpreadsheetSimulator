@@ -33,13 +33,9 @@ public interface Cell {
     CellValue getCellValue();
 
     /**
-     * Set a error value for the cell
+     * Returns string representation of cell according to cell type
+     * @see home.stetsenko.model.cell.CellType
      */
-    void setCellErrorValue(FormulaError value);
-
-    /**
-     * Get a error value for the cell
-     */
-    FormulaError getCellErrorValue();
+    String getCellRepresentation();
 
 }

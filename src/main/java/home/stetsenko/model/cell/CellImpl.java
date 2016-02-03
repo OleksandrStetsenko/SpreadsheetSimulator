@@ -10,7 +10,6 @@ public class CellImpl implements Cell {
     private CellValue cellValue;
     private CellType cellType;
     private CellReference cellReference;
-    private FormulaError cellErrorValue;
 
     @Override
     public CellReference getCellReference() {
@@ -43,13 +42,20 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void setCellErrorValue(FormulaError cellErrorValue) {
-        this.cellErrorValue = cellErrorValue;
-    }
-
-    @Override
-    public FormulaError getCellErrorValue() {
-        return this.cellErrorValue;
+    public String getCellRepresentation() {
+        switch (this.cellType) {
+            case CELL_TYPE_BLANK:
+                return "";
+            case CELL_TYPE_ERROR:
+                return this.cellValue.getCellErrorValue().getValue();
+            case CELL_TYPE_EXPRESSION:
+                return this.cellValue.getExpressionValue();
+            case CELL_TYPE_NUMERIC:
+                return String.valueOf(this.cellValue.getNumericValue());
+            case CELL_TYPE_STRING:
+                return this.cellValue.getTextValue();
+        }
+        return FormulaError.UNKNOWN_CELL_TYPE.getValue();
     }
 
     @Override
@@ -58,7 +64,6 @@ public class CellImpl implements Cell {
                 "cellValue=" + cellValue +
                 ", cellType=" + cellType +
                 ", cellReference=" + cellReference +
-                ", cellErrorValue=" + cellErrorValue +
                 '}';
     }
 }

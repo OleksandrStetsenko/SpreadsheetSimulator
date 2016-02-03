@@ -1,6 +1,7 @@
 package home.stetsenko;
 
 import home.stetsenko.model.cell.Cell;
+import home.stetsenko.model.cell.CellType;
 import home.stetsenko.model.cell.CellValue;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
@@ -14,7 +15,6 @@ public class SpreadsheetInputReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpreadsheetInputReader.class);
 
-    private String[][] cells;
     private Sheet sheet;
     private Scanner stdin;
 
@@ -30,7 +30,6 @@ public class SpreadsheetInputReader {
                 LOGGER.error("There are no height or length of table");
                 return;
             }
-            cells = new String[Integer.parseInt(values[0])][Integer.parseInt(values[1])];
 
             int i = 0;
             sheet = new SheetImpl();
@@ -44,19 +43,14 @@ public class SpreadsheetInputReader {
                 for (String v : lineValues) {
 
                     Cell cell = row.createCell(j);
-                    cell.setCellValue(new CellValue(v));
-
-                    cells[i][j] = v;
+                    cell.setCellType(CellType.CELL_TYPE_EXPRESSION);
+                    cell.setCellValue(new CellValue().setExpressionValue(v));
                     j++;
                 }
                 i++;
             }
         }
 
-    }
-
-    public String[][] getCells() {
-        return cells;
     }
 
     public Sheet getSheet() {
