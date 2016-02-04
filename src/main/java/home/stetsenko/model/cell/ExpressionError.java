@@ -1,6 +1,6 @@
 package home.stetsenko.model.cell;
 
-public enum FormulaError {
+public enum ExpressionError {
 
     /**
      * When cell reference is invalid
@@ -19,7 +19,7 @@ public enum FormulaError {
 
     private String value;
 
-    private FormulaError(String value) {
+    private ExpressionError(String value) {
         this.value = value;
     }
 

@@ -55,7 +55,7 @@ public class CellImpl implements Cell {
             case CELL_TYPE_STRING:
                 return this.cellValue.getTextValue();
         }
-        return FormulaError.UNKNOWN_CELL_TYPE.getValue();
+        return ExpressionError.UNKNOWN_CELL_TYPE.getValue();
     }
 
     @Override

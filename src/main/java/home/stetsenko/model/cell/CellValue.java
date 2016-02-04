@@ -9,7 +9,7 @@ public class CellValue {
     private String textValue;
     private int numericValue;
     private String expressionValue;
-    private FormulaError cellErrorValue;
+    private ExpressionError cellErrorValue;
 
     public String getTextValue() {
         return textValue;
@@ -38,11 +38,11 @@ public class CellValue {
         return this;
     }
 
-    public FormulaError getCellErrorValue() {
+    public ExpressionError getCellErrorValue() {
         return cellErrorValue;
     }
 
-    public CellValue setCellErrorValue(FormulaError cellErrorValue) {
+    public CellValue setCellErrorValue(ExpressionError cellErrorValue) {
         this.cellErrorValue = cellErrorValue;
         return this;
     }

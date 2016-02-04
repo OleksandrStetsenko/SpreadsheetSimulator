@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertTrue;
 
-public class CellParsingTest {
+public class TestCellParsing {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CellParsingTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestCellParsing.class);
 
     @Test
     public void test_recognizeType() {
@@ -30,6 +30,7 @@ public class CellParsingTest {
         assertTrue(CellType.CELL_TYPE_EXPRESSION.equals(CellTypeRecognizer.recognizeType("=A1+B3*5/C4-R4")));
 
         assertTrue(CellType.CELL_TYPE_ERROR.equals(CellTypeRecognizer.recognizeType("#")));
+        assertTrue(CellType.CELL_TYPE_ERROR.equals(CellTypeRecognizer.recognizeType("=A1++A2")));
     }
 
     @Test
@@ -43,11 +44,6 @@ public class CellParsingTest {
         assertTrue(CellTypeRecognizer.extractNumeric("55") == 55);
         assertTrue(CellTypeRecognizer.extractNumeric("1") == 1);
         assertTrue(CellTypeRecognizer.extractNumeric("100") == 100);
-    }
-
-    @Test
-    public void test_extractExpression() {
-        CellTypeRecognizer.extractExpression("=A1");
     }
 
 }

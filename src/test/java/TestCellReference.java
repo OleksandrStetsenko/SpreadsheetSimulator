@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertTrue;
 
-public class CellReferenceTest {
+public class TestCellReference {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CellReferenceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestCellReference.class);
 
     @Test
     public void test_convertColStringToIndex() {
