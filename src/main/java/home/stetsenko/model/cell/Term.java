@@ -35,7 +35,6 @@ public class Term {
         } else {
             throw new IllegalArgumentException(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
         }
-
     }
 
     private void setTermValue(String cellRefGroup, String numericGroup) {

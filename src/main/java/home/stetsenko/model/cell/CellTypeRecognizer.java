@@ -1,6 +1,6 @@
-package home.stetsenko;
+package home.stetsenko.model.cell;
 
-import home.stetsenko.model.cell.CellType;
+import home.stetsenko.SpreadsheetConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

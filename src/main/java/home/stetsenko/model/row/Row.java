@@ -2,10 +2,16 @@ package home.stetsenko.model.row;
 
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.cell.CellType;
+import home.stetsenko.model.sheet.Sheet;
 
 import java.util.Iterator;
 
 public interface Row {
+
+    /**
+     * Get sheet (parent)
+     */
+    Sheet getSheet();
 
     /**
      * Create new cell within the row and return it.

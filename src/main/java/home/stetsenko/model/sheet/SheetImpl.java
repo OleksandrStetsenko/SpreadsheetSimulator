@@ -15,7 +15,7 @@ public class SheetImpl implements Sheet {
 
     @Override
     public Row createRow(int rowIndex) {
-        RowImpl row = new RowImpl(rowIndex);
+        RowImpl row = new RowImpl(this, rowIndex);
         rows.put(rowIndex, row);
         return row;
     }

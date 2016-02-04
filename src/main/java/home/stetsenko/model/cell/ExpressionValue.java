@@ -14,7 +14,6 @@ public class ExpressionValue {
     public static final Pattern TERM_PATTERN = Pattern.compile("([A-Za-z]{1})([0-9]{1})|([0-9]+)");
     private static final Pattern OPERATION_PATTERN = Pattern.compile("[\\=\\+\\-\\*\\/]");
     private String expression;
-    //todo change to Term class
     private List<Term> termList;
     private List<String> operationList;
 

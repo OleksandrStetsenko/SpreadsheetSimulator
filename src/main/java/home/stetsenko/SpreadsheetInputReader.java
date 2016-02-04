@@ -1,9 +1,6 @@
 package home.stetsenko;
 
-import home.stetsenko.model.cell.Cell;
-import home.stetsenko.model.cell.CellType;
-import home.stetsenko.model.cell.CellValue;
-import home.stetsenko.model.cell.ExpressionValue;
+import home.stetsenko.model.cell.*;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
 import home.stetsenko.model.sheet.SheetImpl;
@@ -44,9 +41,22 @@ public class SpreadsheetInputReader {
                 for (String v : lineValues) {
 
                     Cell cell = row.createCell(j);
-                    cell.setCellType(CellType.CELL_TYPE_EXPRESSION);
-                    ExpressionValue expressionValue = new ExpressionValue(v);
-                    cell.setCellValue(new CellValue().setExpressionValue(expressionValue));
+
+                    CellType currentCelltype = CellTypeRecognizer.recognizeType(v);
+
+                    if (CellType.CELL_TYPE_EXPRESSION.equals(currentCelltype)) {
+                        cell.setCellType(CellType.CELL_TYPE_EXPRESSION);
+                        ExpressionValue expressionValue = new ExpressionValue(v);
+                        cell.setCellValue(new CellValue().setExpressionValue(expressionValue));
+                    } else if (CellType.CELL_TYPE_NUMERIC.equals(currentCelltype)) {
+                        cell.setCellType(CellType.CELL_TYPE_NUMERIC);
+                        cell.setCellValue(new CellValue().setNumericValue(Integer.parseInt(v)));
+                    } else if (CellType.CELL_TYPE_STRING.equals(currentCelltype)) {
+                        cell.setCellType(CellType.CELL_TYPE_STRING);
+                        cell.setCellValue(new CellValue().setTextValue(v));
+                    }
+                    //todo: add other cell types
+
                     j++;
                 }
                 i++;

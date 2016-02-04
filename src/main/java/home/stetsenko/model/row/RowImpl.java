@@ -3,6 +3,7 @@ package home.stetsenko.model.row;
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.cell.CellImpl;
 import home.stetsenko.model.cell.CellType;
+import home.stetsenko.model.sheet.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,15 +17,22 @@ public class RowImpl implements Row {
     private static final Logger LOGGER = LoggerFactory.getLogger(RowImpl.class);
 
     private final SortedMap<Integer, Cell> cells = new TreeMap<Integer, Cell>();
+    private Sheet sheet;
     private int rowIndex;
 
-    public RowImpl(int rowIndex) {
+    public RowImpl(Sheet sheet, int rowIndex) {
+        this.sheet = sheet;
         this.rowIndex = rowIndex;
     }
 
     @Override
+    public Sheet getSheet() {
+        return sheet;
+    }
+
+    @Override
     public Cell createCell(int colIndex) {
-        CellImpl cell = new CellImpl();
+        CellImpl cell = new CellImpl(this);
         //todo: sets blank sell type
         cell.setCellType(CellType.CELL_TYPE_BLANK);
         cells.put(colIndex, cell);
@@ -33,7 +41,7 @@ public class RowImpl implements Row {
 
     @Override
     public Cell createCell(int colIndex, CellType type) {
-        CellImpl cell = new CellImpl();
+        CellImpl cell = new CellImpl(this);
         cell.setCellType(type);
         cells.put(colIndex, cell);
         return cell;

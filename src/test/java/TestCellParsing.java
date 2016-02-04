@@ -1,4 +1,4 @@
-import home.stetsenko.CellTypeRecognizer;
+import home.stetsenko.model.cell.CellTypeRecognizer;
 import home.stetsenko.model.cell.CellType;
 import org.junit.Test;
 import org.slf4j.Logger;

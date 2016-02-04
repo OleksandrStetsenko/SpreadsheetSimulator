@@ -1,5 +1,6 @@
 package home.stetsenko.model.cell;
 
+import home.stetsenko.model.row.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,9 +8,19 @@ public class CellImpl implements Cell {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CellImpl.class);
 
+    private Row row;
     private CellValue cellValue;
     private CellType cellType;
     private CellReference cellReference;
+
+    public CellImpl(Row row) {
+        this.row = row;
+    }
+
+    @Override
+    public Row getRow() {
+        return row;
+    }
 
     @Override
     public CellReference getCellReference() {

@@ -1,6 +1,13 @@
 package home.stetsenko.model.cell;
 
+import home.stetsenko.model.row.Row;
+
 public interface Cell {
+
+    /**
+     * Get parent (row)
+     */
+    Row getRow();
 
     /**
      * @return cell reference
