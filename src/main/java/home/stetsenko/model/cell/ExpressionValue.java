@@ -14,7 +14,8 @@ public class ExpressionValue {
     public static final Pattern TERM_PATTERN = Pattern.compile("([A-Za-z]{1})([0-9]{1})|([0-9]+)");
     private static final Pattern OPERATION_PATTERN = Pattern.compile("[\\=\\+\\-\\*\\/]");
     private String expression;
-    private List<String> termList;
+    //todo change to Term class
+    private List<Term> termList;
     private List<String> operationList;
 
     public ExpressionValue(String expression) {
@@ -23,7 +24,7 @@ public class ExpressionValue {
         extractExpressionOperations();
     }
 
-    public List<String> getTermList() {
+    public List<Term> getTermList() {
         return termList;
     }
 
@@ -37,10 +38,10 @@ public class ExpressionValue {
 
     private void extractExpressionTerms() {
         LOGGER.debug("Input string = {}", expression);
-        this.termList = new ArrayList<String>();
+        this.termList = new ArrayList<Term>();
         String[] strings = OPERATION_PATTERN.split(expression);
         for (int i = 1; i < strings.length; i++) {
-            termList.add(strings[i]);
+            termList.add(new Term(strings[i]));
         }
         LOGGER.debug("Terms from string = {}", termList);
     }
