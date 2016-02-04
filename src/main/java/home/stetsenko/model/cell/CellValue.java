@@ -8,7 +8,7 @@ public class CellValue {
     private static final Logger LOGGER = LoggerFactory.getLogger(CellValue.class);
     private String textValue;
     private int numericValue;
-    private String expressionValue;
+    private ExpressionValue expressionValue;
     private ExpressionError cellErrorValue;
 
     public String getTextValue() {
@@ -29,11 +29,11 @@ public class CellValue {
         return this;
     }
 
-    public String getExpressionValue() {
+    public ExpressionValue getExpressionValue() {
         return expressionValue;
     }
 
-    public CellValue setExpressionValue(String expressionValue) {
+    public CellValue setExpressionValue(ExpressionValue expressionValue) {
         this.expressionValue = expressionValue;
         return this;
     }

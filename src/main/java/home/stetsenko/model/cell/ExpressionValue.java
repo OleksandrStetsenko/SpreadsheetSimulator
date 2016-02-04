@@ -1,6 +1,5 @@
 package home.stetsenko.model.cell;
 
-import home.stetsenko.CellTypeRecognizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,8 @@ import java.util.regex.Pattern;
 public class ExpressionValue {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExpressionValue.class);
-    private static final Pattern TERM_PATTERN = Pattern.compile("([A-Za-z]{1})([0-9]{1})|([0-9]+)");
+    //todo: move to constants
+    public static final Pattern TERM_PATTERN = Pattern.compile("([A-Za-z]{1})([0-9]{1})|([0-9]+)");
     private static final Pattern OPERATION_PATTERN = Pattern.compile("[\\=\\+\\-\\*\\/]");
     private String expression;
     private List<String> termList;
@@ -19,8 +19,8 @@ public class ExpressionValue {
 
     public ExpressionValue(String expression) {
         this.expression = expression;
-        this.termList = extractExpressionTerms(expression);
-        this.operationList = extractExpressionOperations(expression);
+        extractExpressionTerms();
+        extractExpressionOperations();
     }
 
     public List<String> getTermList() {
@@ -31,27 +31,29 @@ public class ExpressionValue {
         return operationList;
     }
 
-    public static List<String> extractExpressionTerms(String str) {
-        LOGGER.debug("Input string = {}", str);
-        List<String> termList = new ArrayList<String>();
-        String[] strings = OPERATION_PATTERN.split(str);
+    public String getExpression() {
+        return expression;
+    }
+
+    private void extractExpressionTerms() {
+        LOGGER.debug("Input string = {}", expression);
+        this.termList = new ArrayList<String>();
+        String[] strings = OPERATION_PATTERN.split(expression);
         for (int i = 1; i < strings.length; i++) {
             termList.add(strings[i]);
         }
         LOGGER.debug("Terms from string = {}", termList);
-        return termList;
     }
 
-    public static List<String> extractExpressionOperations(String str) {
-        LOGGER.debug("Input string = {}", str);
-        List<String> operationList = new ArrayList<String>();
+    private void extractExpressionOperations() {
+        LOGGER.debug("Input string = {}", expression);
+        this.operationList = new ArrayList<String>();
 
-        String[] strings = TERM_PATTERN.split(str);
+        String[] strings = TERM_PATTERN.split(expression);
         for (int i = 1; i < strings.length; i++) {
             operationList.add(strings[i]);
         }
         LOGGER.debug("Operations from string = {}", operationList);
-        return operationList;
     }
 
     @Override

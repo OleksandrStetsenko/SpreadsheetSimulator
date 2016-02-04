@@ -3,6 +3,7 @@ package home.stetsenko;
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.cell.CellType;
 import home.stetsenko.model.cell.CellValue;
+import home.stetsenko.model.cell.ExpressionValue;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
 import home.stetsenko.model.sheet.SheetImpl;
@@ -27,7 +28,7 @@ public class SpreadsheetInputReader {
         if (stdin.hasNextLine()) {
             String[] values = stdin.nextLine().split(SpreadsheetConstants.SEPARATOR);
             if (values.length != 2) {
-                LOGGER.error("There are no height or length of table");
+                LOGGER.error(SpreadsheetConstants.MESSAGE_NO_LENGTH_OR_HEIGHT);
                 return;
             }
 
@@ -44,7 +45,8 @@ public class SpreadsheetInputReader {
 
                     Cell cell = row.createCell(j);
                     cell.setCellType(CellType.CELL_TYPE_EXPRESSION);
-                    cell.setCellValue(new CellValue().setExpressionValue(v));
+                    ExpressionValue expressionValue = new ExpressionValue(v);
+                    cell.setCellValue(new CellValue().setExpressionValue(expressionValue));
                     j++;
                 }
                 i++;

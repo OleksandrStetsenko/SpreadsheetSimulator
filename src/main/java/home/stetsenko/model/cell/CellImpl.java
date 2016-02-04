@@ -49,7 +49,7 @@ public class CellImpl implements Cell {
             case CELL_TYPE_ERROR:
                 return this.cellValue.getCellErrorValue().getValue();
             case CELL_TYPE_EXPRESSION:
-                return this.cellValue.getExpressionValue();
+                return this.cellValue.getExpressionValue().getExpression();
             case CELL_TYPE_NUMERIC:
                 return String.valueOf(this.cellValue.getNumericValue());
             case CELL_TYPE_STRING:

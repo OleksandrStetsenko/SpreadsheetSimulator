@@ -70,7 +70,6 @@ public class CellReference {
 
     /**
      * Set row index
-     * @param rowIndex Index starts form 0
      */
     public void setRowIndex(int rowIndex) {
         this.rowIndex = rowIndex;
@@ -78,7 +77,6 @@ public class CellReference {
 
     /**
      * Set col index
-     * @param rowIndex Index starts form 0
      */
     public void setColIndex(int colIndex) {
         this.colIndex = colIndex;
@@ -123,4 +121,5 @@ public class CellReference {
 
         return colRef.toString();
     }
+
 }
