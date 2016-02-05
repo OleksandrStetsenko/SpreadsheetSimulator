@@ -10,18 +10,22 @@ public class OperationProcessorFactory {
     public OperationProcessor getOperationProcessor(String operator) {
 
         if ("+".equals(operator)) {
+            LOGGER.debug("AddOperationProcessor is created");
             return new AddOperationProcessor();
         }
 
         if ("/".equals(operator)) {
+            LOGGER.debug("DivOperationProcessor is created");
             return new DivOperationProcessor();
         }
 
         if ("*".equals(operator)) {
+            LOGGER.debug("MultOperationProcessor is created");
             return new MultOperationProcessor();
         }
 
         if ("-".equals(operator)) {
+            LOGGER.debug("SubOperationProcessor is created");
             return new SubOperationProcessor();
         }
 

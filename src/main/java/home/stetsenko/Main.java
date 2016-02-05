@@ -26,7 +26,7 @@ public class Main {
 
             SpreadsheetUtils.printSheet(sheet);
 
-            SpreadsheetUtils.printSheet(SheetProcessor.process(sheet));
+            SpreadsheetUtils.printSheet(new SheetProcessor().process(sheet));
 
         } catch (FileNotFoundException e) {
             LOGGER.error("File was not found", e);

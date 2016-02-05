@@ -14,10 +14,9 @@ import java.util.List;
 public class SheetProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SheetProcessor.class);
+    OperationProcessorFactory operationProcessorFactory = new OperationProcessorFactory();
 
-    public static Sheet process(Sheet sheet) {
-
-        OperationProcessorFactory operationProcessorFactory = new OperationProcessorFactory();
+    public Sheet process(Sheet sheet) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
@@ -42,26 +41,90 @@ public class SheetProcessor {
                     ExpressionValue expressionValue = cellValue.getExpressionValue();
                     List<Term> termList = expressionValue.getTermList();
                     List<String> operationList = expressionValue.getOperationList();
-                    for (int i = 0; i < operationList.size(); i++) {
-                        Term leftTerm = termList.get(i);
-                        TermType leftTermTermType = leftTerm.getTermType();
-                        //todo
-                        int k = i;
-                        Term rightTerm = termList.get(i++);
-                        TermType rightTermTermType = rightTerm.getTermType();
 
-                        if (TermType.TERM_TYPE_NUMERIC.equals(leftTermTermType) && TermType.TERM_TYPE_NUMERIC.equals(rightTermTermType)) {
-                            //can be calculated
-                            OperationProcessor operationProcessor = operationProcessorFactory.getOperationProcessor(operationList.get(0));
-                            int result = operationProcessor.calculate(leftTerm.getNumericValue(), rightTerm.getNumericValue());
-                        }
+                    int result = 0;
+                    for (int i = 0; i < operationList.size(); i++) {
+                        int index = i;
+                        Term leftTerm = termList.get(index);
+                        Term rightTerm = termList.get(index++);
+                        result += calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
                     }
+                    cell.setCellType(CellType.CELL_TYPE_NUMERIC);
+                    cellValue.setNumericValue(result);
 
                 }
             }
         }
 
         return sheet;
+    }
+
+    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) {
+
+        int result = 0;
+
+        TermType leftTermTermType = leftTerm.getTermType();
+        TermType rightTermTermType = rightTerm.getTermType();
+
+        OperationProcessor operationProcessor = operationProcessorFactory.getOperationProcessor(operation);
+
+        if (TermType.TERM_TYPE_NUMERIC.equals(leftTermTermType) && TermType.TERM_TYPE_NUMERIC.equals(rightTermTermType)) {
+            //can be calculated
+            return operationProcessor.calculate(leftTerm.getNumericValue(), rightTerm.getNumericValue());
+        }
+
+        int leftValue = 0;
+        if (TermType.TERM_TYPE_CELL_REFERENCE.equals(leftTermTermType)) {
+            CellReference cellReferenceValue = leftTerm.getCellReferenceValue();
+            Cell cell = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
+            CellType cellType = cell.getCellType();
+            if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
+                leftValue = cell.getCellValue().getNumericValue();
+            } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
+                ExpressionValue expressionValue = cell.getCellValue().getExpressionValue();
+
+                List<Term> termList = expressionValue.getTermList();
+                List<String> operationList = expressionValue.getOperationList();
+                for (int i = 0; i < operationList.size(); i++) {
+                    int index = i;
+                    //todo rename
+                    Term leftTerm1 = termList.get(index);
+                    //todo rename
+                    Term rightTerm1 = termList.get(index++);
+                    leftValue = calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
+                }
+
+            }
+        }
+
+        int rightValue = 0;
+        if (TermType.TERM_TYPE_CELL_REFERENCE.equals(leftTermTermType)) {
+            CellReference cellReferenceValue = rightTerm.getCellReferenceValue();
+            Cell cell = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
+            CellType cellType = cell.getCellType();
+            if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
+                rightValue = cell.getCellValue().getNumericValue();
+            } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
+                ExpressionValue expressionValue = cell.getCellValue().getExpressionValue();
+
+                List<Term> termList = expressionValue.getTermList();
+                List<String> operationList = expressionValue.getOperationList();
+                for (int i = 0; i < operationList.size(); i++) {
+                    int index = i;
+                    //todo rename
+                    Term leftTerm1 = termList.get(index);
+                    //todo rename
+                    Term rightTerm1 = termList.get(index++);
+                    rightValue = calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
+                }
+
+            }
+        }
+
+        result = operationProcessor.calculate(leftValue, rightValue);
+
+        return result;
+
     }
 
 }
