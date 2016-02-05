@@ -9,6 +9,6 @@ public class DivOperationProcessor implements OperationProcessor {
 
     @Override
     public int calculate(int leftOperand, int rightOperand) {
-        return leftOperand / rightOperand;
+        return rightOperand != 0 ? leftOperand / rightOperand : 0;
     }
 }

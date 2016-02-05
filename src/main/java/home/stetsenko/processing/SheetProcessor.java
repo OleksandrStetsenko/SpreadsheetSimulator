@@ -31,26 +31,16 @@ public class SheetProcessor {
                     cell.setCalculated(true);
                 } else if (CellType.CELL_TYPE_STRING.equals(cellType)) {
 
-                    cell.setCalculated(true);
                     CellValue cellValue = cell.getCellValue();
                     cellValue.setTextValue(CellParser.extractText(cellValue.getTextValue()));
+                    cell.setCalculated(true);
 
                 } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
 
-                    CellValue cellValue = cell.getCellValue();
-                    ExpressionValue expressionValue = cellValue.getExpressionValue();
-                    List<Term> termList = expressionValue.getTermList();
-                    List<String> operationList = expressionValue.getOperationList();
-
-                    int result = 0;
-                    for (int i = 0; i < operationList.size(); i++) {
-                        int index = i;
-                        Term leftTerm = termList.get(index);
-                        Term rightTerm = termList.get(index++);
-                        result += calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
-                    }
+                    int result = getCellResult(sheet, cell);
                     cell.setCellType(CellType.CELL_TYPE_NUMERIC);
-                    cellValue.setNumericValue(result);
+                    cell.getCellValue().setNumericValue(result);
+                    cell.setCalculated(true);
 
                 }
             }
@@ -59,72 +49,94 @@ public class SheetProcessor {
         return sheet;
     }
 
-    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) {
+    private int getCellResult(Sheet sheet, Cell cell) {
 
         int result = 0;
 
-        TermType leftTermTermType = leftTerm.getTermType();
-        TermType rightTermTermType = rightTerm.getTermType();
+        CellType cellType = cell.getCellType();
+        if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
+            int numericValue = cell.getCellValue().getNumericValue();
+            cell.setCellType(CellType.CELL_TYPE_NUMERIC);
+            cell.getCellValue().setNumericValue(numericValue);
+            cell.setCalculated(true);
+            return numericValue;
+        } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
+            CellValue cellValue = cell.getCellValue();
+            ExpressionValue expressionValue = cellValue.getExpressionValue();
+            List<Term> termList = expressionValue.getTermList();
+            List<String> operationList = expressionValue.getOperationList();
+
+            if (operationList.size() == 0 && termList.size() == 1) {
+                // without operations (ref to another cell)
+                Term term = termList.get(0);
+                TermType termType = term.getTermType();
+                if (TermType.TERM_TYPE_NUMERIC.equals(termType)) {
+                    return term.getNumericValue();
+                } else if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
+                    CellReference cellReferenceValue = term.getCellReferenceValue();
+                    Cell cell1 = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
+                    int cellResult = getCellResult(sheet, cell1);
+                    cell1.setCellType(CellType.CELL_TYPE_NUMERIC);
+                    cell1.getCellValue().setNumericValue(cellResult);
+                    return cellResult;
+                }
+            }
+
+            for (int i = 0; i < operationList.size(); i++) {
+                Term leftTerm = termList.get(i);
+                Term rightTerm = termList.get(i+1);
+                result += calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
+            }
+        }
+
+        return result;
+    }
+
+    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) {
+
+        TermType leftTermType = leftTerm.getTermType();
+        TermType rightTermType = rightTerm.getTermType();
 
         OperationProcessor operationProcessor = operationProcessorFactory.getOperationProcessor(operation);
 
-        if (TermType.TERM_TYPE_NUMERIC.equals(leftTermTermType) && TermType.TERM_TYPE_NUMERIC.equals(rightTermTermType)) {
+        if (TermType.TERM_TYPE_NUMERIC.equals(leftTermType)
+                && TermType.TERM_TYPE_NUMERIC.equals(rightTermType)) {
             //can be calculated
             return operationProcessor.calculate(leftTerm.getNumericValue(), rightTerm.getNumericValue());
         }
 
-        int leftValue = 0;
-        if (TermType.TERM_TYPE_CELL_REFERENCE.equals(leftTermTermType)) {
-            CellReference cellReferenceValue = leftTerm.getCellReferenceValue();
+        int leftValue = getTermValue(sheet, leftTerm, leftTermType);
+        int rightValue = getTermValue(sheet, rightTerm, rightTermType);
+
+        return operationProcessor.calculate(leftValue, rightValue);
+
+    }
+
+    private int getTermValue(Sheet sheet, Term term, TermType termType) {
+        int value = 0;
+
+        if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
+            CellReference cellReferenceValue = term.getCellReferenceValue();
             Cell cell = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
             CellType cellType = cell.getCellType();
             if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
-                leftValue = cell.getCellValue().getNumericValue();
+                value = cell.getCellValue().getNumericValue();
             } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
                 ExpressionValue expressionValue = cell.getCellValue().getExpressionValue();
 
                 List<Term> termList = expressionValue.getTermList();
                 List<String> operationList = expressionValue.getOperationList();
                 for (int i = 0; i < operationList.size(); i++) {
-                    int index = i;
-                    //todo rename
-                    Term leftTerm1 = termList.get(index);
-                    //todo rename
-                    Term rightTerm1 = termList.get(index++);
-                    leftValue = calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
+                    Term leftTerm1 = termList.get(i);
+                    Term rightTerm1 = termList.get(i+1);
+                    value += calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
                 }
-
+                cell.getCellValue().setNumericValue(value);
+                cell.setCellType(CellType.CELL_TYPE_NUMERIC);
+                cell.setCalculated(true);
             }
         }
-
-        int rightValue = 0;
-        if (TermType.TERM_TYPE_CELL_REFERENCE.equals(leftTermTermType)) {
-            CellReference cellReferenceValue = rightTerm.getCellReferenceValue();
-            Cell cell = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
-            CellType cellType = cell.getCellType();
-            if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
-                rightValue = cell.getCellValue().getNumericValue();
-            } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
-                ExpressionValue expressionValue = cell.getCellValue().getExpressionValue();
-
-                List<Term> termList = expressionValue.getTermList();
-                List<String> operationList = expressionValue.getOperationList();
-                for (int i = 0; i < operationList.size(); i++) {
-                    int index = i;
-                    //todo rename
-                    Term leftTerm1 = termList.get(index);
-                    //todo rename
-                    Term rightTerm1 = termList.get(index++);
-                    rightValue = calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
-                }
-
-            }
-        }
-
-        result = operationProcessor.calculate(leftValue, rightValue);
-
-        return result;
-
+        return value;
     }
 
 }
