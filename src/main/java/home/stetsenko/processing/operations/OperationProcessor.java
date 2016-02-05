@@ -1,4 +1,4 @@
-package home.stetsenko.processing;
+package home.stetsenko.processing.operations;
 
 public interface OperationProcessor {
 

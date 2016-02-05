@@ -42,8 +42,8 @@ public class SpreadsheetInputReader {
 
                     Cell cell = row.createCell(j);
 
-                    CellType currentCelltype = CellTypeRecognizer.recognizeType(v);
-
+                    CellType currentCelltype = CellParser.recognizeType(v);
+                    cell.setCellReference(new CellReference(i, j));
                     if (CellType.CELL_TYPE_EXPRESSION.equals(currentCelltype)) {
                         cell.setCellType(CellType.CELL_TYPE_EXPRESSION);
                         ExpressionValue expressionValue = new ExpressionValue(v);

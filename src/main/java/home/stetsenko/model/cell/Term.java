@@ -5,20 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Term {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Term.class);
-    //todo duplicate
-    private static final Pattern TERM_PATTERN = Pattern.compile("(([A-Za-z]{1})([0-9]{1}))|([0-9]+)");
     private TermType termType;
     private int numericValue;
     private CellReference cellReferenceValue;
 
     public Term(String termString) {
         LOGGER.debug("Input string = {}", termString);
-        Matcher stringPatternMatcher = TERM_PATTERN.matcher(termString);
+        Matcher stringPatternMatcher = SpreadsheetConstants.PATTERN_TERM.matcher(termString);
         if(stringPatternMatcher.matches()) {
             String cellRefGroup = stringPatternMatcher.group(1);
             String numericGroup = stringPatternMatcher.group(4);

@@ -1,18 +1,15 @@
 package home.stetsenko.model.cell;
 
+import home.stetsenko.SpreadsheetConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ExpressionValue {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExpressionValue.class);
-    //todo: move to constants
-    public static final Pattern TERM_PATTERN = Pattern.compile("([A-Za-z]{1})([0-9]{1})|([0-9]+)");
-    private static final Pattern OPERATION_PATTERN = Pattern.compile("[\\=\\+\\-\\*\\/]");
     private String expression;
     private List<Term> termList;
     private List<String> operationList;
@@ -38,7 +35,7 @@ public class ExpressionValue {
     private void extractExpressionTerms() {
         LOGGER.debug("Input string = {}", expression);
         this.termList = new ArrayList<Term>();
-        String[] strings = OPERATION_PATTERN.split(expression);
+        String[] strings = SpreadsheetConstants.PATTERN_OPERATION.split(expression);
         for (int i = 1; i < strings.length; i++) {
             termList.add(new Term(strings[i]));
         }
@@ -49,7 +46,7 @@ public class ExpressionValue {
         LOGGER.debug("Input string = {}", expression);
         this.operationList = new ArrayList<String>();
 
-        String[] strings = TERM_PATTERN.split(expression);
+        String[] strings = SpreadsheetConstants.PATTERN_TERM.split(expression);
         for (int i = 1; i < strings.length; i++) {
             operationList.add(strings[i]);
         }

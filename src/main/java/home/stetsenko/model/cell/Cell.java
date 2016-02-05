@@ -4,6 +4,10 @@ import home.stetsenko.model.row.Row;
 
 public interface Cell {
 
+    boolean isCalculated();
+
+    void setCalculated(boolean isCalculated);
+
     /**
      * Get parent (row)
      */

@@ -12,9 +12,20 @@ public class CellImpl implements Cell {
     private CellValue cellValue;
     private CellType cellType;
     private CellReference cellReference;
+    private boolean isCalculated;
 
     public CellImpl(Row row) {
         this.row = row;
+    }
+
+    @Override
+    public boolean isCalculated() {
+        return isCalculated;
+    }
+
+    @Override
+    public void setCalculated(boolean isCalculated) {
+        this.isCalculated = isCalculated;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package home.stetsenko;
 
 import home.stetsenko.model.sheet.Sheet;
+import home.stetsenko.processing.SheetProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,8 @@ public class Main {
             Sheet sheet = spreadsheetInputReader.getSheet();
 
             SpreadsheetUtils.printSheet(sheet);
+
+            SpreadsheetUtils.printSheet(SheetProcessor.process(sheet));
 
         } catch (FileNotFoundException e) {
             LOGGER.error("File was not found", e);

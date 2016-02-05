@@ -1,22 +1,16 @@
 package home.stetsenko.model.cell;
 
 
+import home.stetsenko.SpreadsheetConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CellReference {
 
     private static Logger LOGGER = LoggerFactory.getLogger(CellReference.class);
-
-    /**
-     * Matches a run of one letter followed by a run of one digit.
-     * The run of letters is group 1 and the run of digits is group 2.
-     */
-    private static final Pattern CELL_REF_PATTERN = Pattern.compile("([A-Za-z]{1})([0-9]{1})");
 
     private int rowIndex = 0;
     private int colIndex = 0;
@@ -38,7 +32,7 @@ public class CellReference {
             throw new IllegalArgumentException("Empty string not allowed");
         }
 
-        Matcher cellRefPatternMatcher = CELL_REF_PATTERN.matcher(str);
+        Matcher cellRefPatternMatcher = SpreadsheetConstants.PATTERN_CELL_REF.matcher(str);
         if ( !cellRefPatternMatcher.matches() ) {
             //todo: exception in constructor
             throw new IllegalArgumentException("String representation of cell is invalid");
@@ -122,4 +116,11 @@ public class CellReference {
         return colRef.toString();
     }
 
+    @Override
+    public String toString() {
+        return "CellReference{" +
+                "rowIndex=" + rowIndex +
+                ", colIndex=" + colIndex +
+                '}';
+    }
 }

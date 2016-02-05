@@ -46,4 +46,14 @@ public class CellValue {
         this.cellErrorValue = cellErrorValue;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "CellValue{" +
+                "textValue='" + textValue + '\'' +
+                ", numericValue=" + numericValue +
+                ", expressionValue=" + expressionValue +
+                ", cellErrorValue=" + cellErrorValue +
+                '}';
+    }
 }

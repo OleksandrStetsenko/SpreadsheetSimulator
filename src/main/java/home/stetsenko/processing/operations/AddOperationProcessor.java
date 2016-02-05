@@ -1,4 +1,4 @@
-package home.stetsenko.processing;
+package home.stetsenko.processing.operations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
