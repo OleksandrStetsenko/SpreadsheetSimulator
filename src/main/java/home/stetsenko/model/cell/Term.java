@@ -14,7 +14,7 @@ public class Term {
     private CellReference cellReferenceValue;
 
     public Term(String termString) {
-        LOGGER.debug("Input string = {}", termString);
+        LOGGER.debug("Input string for creating term = {}", termString);
         Matcher stringPatternMatcher = SpreadsheetConstants.PATTERN_TERM.matcher(termString);
         if(stringPatternMatcher.matches()) {
             String cellRefGroup = stringPatternMatcher.group(1);
@@ -24,12 +24,17 @@ public class Term {
             } else if (numericGroup != null) {
                 this.termType = TermType.TERM_TYPE_NUMERIC;
             } else {
-                this.termType = TermType.TERM_TYPE_ERROR;
+                LOGGER.error(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
+                throw new IllegalArgumentException(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
             }
 
             setTermValue(cellRefGroup, numericGroup);
 
+            LOGGER.debug("Term from input string \"{}\" has been created. Term type = {}. " +
+                    "Numeric  value = {}. Cell ref value = {}", termString, termType, numericValue, cellReferenceValue);
+
         } else {
+            LOGGER.error(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
             throw new IllegalArgumentException(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
         }
     }
@@ -40,6 +45,7 @@ public class Term {
         } else if (termType == TermType.TERM_TYPE_NUMERIC) {
             this.numericValue = Integer.parseInt(numericGroup);
         }
+        //todo add calculation for error value
     }
 
     public TermType getTermType() {

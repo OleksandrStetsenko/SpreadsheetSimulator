@@ -67,7 +67,7 @@ public class CellImpl implements Cell {
     public String getCellRepresentation() {
         switch (this.cellType) {
             case CELL_TYPE_BLANK:
-                return "";
+                return this.cellValue.getTextValue();
             case CELL_TYPE_ERROR:
                 return this.cellValue.getCellErrorValue().getValue();
             case CELL_TYPE_EXPRESSION:
@@ -83,9 +83,9 @@ public class CellImpl implements Cell {
     @Override
     public String toString() {
         return "CellImpl{" +
-                "cellValue=" + cellValue +
-                ", cellType=" + cellType +
+                "cellType=" + cellType +
                 ", cellReference=" + cellReference +
+                ", cellValue=" + getCellRepresentation() +
                 '}';
     }
 }

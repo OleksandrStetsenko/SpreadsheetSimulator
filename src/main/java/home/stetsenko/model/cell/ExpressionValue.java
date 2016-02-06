@@ -33,7 +33,7 @@ public class ExpressionValue {
     }
 
     private void extractExpressionTerms() {
-        LOGGER.debug("Input string = {}", expression);
+        LOGGER.debug("Input string for extracting terms = {}", expression);
         this.termList = new ArrayList<Term>();
         String[] strings = SpreadsheetConstants.PATTERN_OPERATION.split(expression);
         for (int i = 1; i < strings.length; i++) {
@@ -43,7 +43,7 @@ public class ExpressionValue {
     }
 
     private void extractExpressionOperations() {
-        LOGGER.debug("Input string = {}", expression);
+        LOGGER.debug("Input string for extracting operations = {}", expression);
         this.operationList = new ArrayList<String>();
 
         String[] strings = SpreadsheetConstants.PATTERN_TERM.split(expression);

@@ -13,13 +13,13 @@ public enum ExpressionError {
     CIRCULAR_REF("#CIRCULAR_REF!"),
 
     /**
-     * When circular reference detected
+     * Unknown reference detected
      */
     UNKNOWN_CELL_TYPE("#UNKNOWN_CELL_TYPE!");
 
     private String value;
 
-    private ExpressionError(String value) {
+    ExpressionError(String value) {
         this.value = value;
     }
 

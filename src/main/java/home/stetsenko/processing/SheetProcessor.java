@@ -18,6 +18,8 @@ public class SheetProcessor {
 
     public Sheet process(Sheet sheet) {
 
+        LOGGER.debug("=== Start processing cells ===");
+
         Iterator<Row> rowIterator = sheet.rowIterator();
 
         while (rowIterator.hasNext()) {
@@ -25,7 +27,7 @@ public class SheetProcessor {
             Iterator<Cell> cellIterator = row.cellIterator();
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                LOGGER.debug("cell = {}", cell);
+                LOGGER.debug("Cell to be processed = {}", cell);
                 CellType cellType = cell.getCellType();
                 if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
                     cell.setCalculated(true);
@@ -45,6 +47,8 @@ public class SheetProcessor {
                 }
             }
         }
+
+        LOGGER.debug("=== Start processing cells ===");
 
         return sheet;
     }

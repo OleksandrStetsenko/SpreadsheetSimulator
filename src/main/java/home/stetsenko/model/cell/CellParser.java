@@ -47,12 +47,12 @@ public class CellParser {
 
     public static String extractText(String str) {
 
-        LOGGER.debug("Input string = {}", str);
+        LOGGER.debug("Input string for extraction text = {}", str);
 
         Matcher stringPatternMatcher = SpreadsheetConstants.PATTERN_STRING_CELL_TYPE.matcher(str);
         if(stringPatternMatcher.matches()) {
             String s = stringPatternMatcher.group(1);
-            LOGGER.debug("Result test = {}", s);
+            LOGGER.debug("Result of extracting text = {}", s);
             return s;
         } else {
             LOGGER.error(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
@@ -62,11 +62,13 @@ public class CellParser {
 
     public static int extractNumeric(String str) {
 
-        LOGGER.debug("Input string = {}", str);
+        LOGGER.debug("Input string for extracting numeric = {}", str);
 
         Matcher numericPatternMatcher = SpreadsheetConstants.PATTERN_NUMERIC_CELL_TYPE.matcher(str);
         if(numericPatternMatcher.matches()) {
-            return Integer.parseInt(numericPatternMatcher.group(1));
+            int i = Integer.parseInt(numericPatternMatcher.group(1));
+            LOGGER.debug("Result of extracting numeric = {}", i);
+            return i;
         } else {
             LOGGER.error(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);
             throw new IllegalArgumentException(SpreadsheetConstants.MESSAGE_STRING_DOES_NOT_SATISFY_CELL_TYPE_PATTERN);

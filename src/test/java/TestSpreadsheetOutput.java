@@ -1,3 +1,5 @@
+import home.stetsenko.exceptions.IllegalInputFormatException;
+import home.stetsenko.SpreadsheetConstants;
 import home.stetsenko.SpreadsheetInputReader;
 import home.stetsenko.SpreadsheetUtils;
 import home.stetsenko.model.sheet.Sheet;
@@ -26,18 +28,22 @@ public class TestSpreadsheetOutput {
             stdin = new Scanner(file);
             LOGGER.debug("Scanner is initialized");
         } catch (FileNotFoundException e) {
-            LOGGER.error("File was not found", e);
-            fail("File was not found");
+            LOGGER.error(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND, e);
+            fail(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND);
         }
     }
 
     @Test
     public void testSheetOutput() {
         SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
-        spreadsheetInputReader.readInput();
-        Sheet sheet = spreadsheetInputReader.getSheet();
-        assertNotNull("Array of cells is null", sheet);
-        SpreadsheetUtils.printSheet(sheet);
+        try {
+            spreadsheetInputReader.readInput();
+            Sheet sheet = spreadsheetInputReader.getSheet();
+            assertNotNull("Array of cells is null", sheet);
+            SpreadsheetUtils.printSheet(sheet);
+        } catch (IllegalInputFormatException e) {
+            fail(e.getMessage());
+        }
     }
 
 }

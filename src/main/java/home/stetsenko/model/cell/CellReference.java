@@ -28,13 +28,11 @@ public class CellReference {
     public CellReference(String str) {
 
         if (str.length() < 2) {
-            //todo: exception in constructor
             throw new IllegalArgumentException("Empty string not allowed");
         }
 
         Matcher cellRefPatternMatcher = SpreadsheetConstants.PATTERN_CELL_REF.matcher(str);
         if ( !cellRefPatternMatcher.matches() ) {
-            //todo: exception in constructor
             throw new IllegalArgumentException("String representation of cell is invalid");
         }
 
@@ -43,6 +41,8 @@ public class CellReference {
 
         this.rowIndex = Integer.parseInt(digitsGroup) - 1;
         this.colIndex = convertColStringToIndex(lettersGroup);
+
+        LOGGER.debug("Cell reference {} has been created. Row index: {}. Col index: {} ", str, rowIndex, colIndex);
 
     }
 
@@ -96,8 +96,7 @@ public class CellReference {
      * 3 -> 'D'
      */
     public static String convertNumToColString(int col) {
-        // Excel counts column A as the 1st column, we
-        //  treat it as the 0th one
+        // Excel counts column A as the 1st column, we treat it as the 0th one
         int excelColNum = col + 1;
 
         StringBuilder colRef = new StringBuilder(2);
