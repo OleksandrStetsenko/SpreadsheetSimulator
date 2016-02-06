@@ -1,5 +1,6 @@
 import home.stetsenko.SpreadsheetConstants;
 import home.stetsenko.SpreadsheetInputReader;
+import home.stetsenko.SpreadsheetUtils;
 import home.stetsenko.exceptions.IllegalInputFormatException;
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.row.Row;
@@ -52,6 +53,34 @@ public class TestSheetProcessor {
 
     }
 
+    @Test
+    public void test_blankValues() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example3.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"<blank>", "#REF!", "5"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
+    @Test
+    public void test_divZero() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example4.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"0", "#DIV/0!", "5"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
     private void compareWithExpected(File file, String[][] expectedArray) {
 
         Scanner stdin = null;
@@ -64,11 +93,15 @@ public class TestSheetProcessor {
             spreadsheetInputReader.readInput();
             Sheet sheet = spreadsheetInputReader.getSheet();
 
+            SpreadsheetUtils.printSheet(sheet);
+
             if (sheet.getNumberOfRows() == 0 || sheet.getRow(0).getLastCellNum() == 0) {
                 fail("Empty sheet");
             }
 
             Sheet calculatedSheet = new SheetProcessor().process(sheet);
+
+            SpreadsheetUtils.printSheet(calculatedSheet);
 
             //convert sheet to array
             String[][] actualArray = new String[calculatedSheet.getNumberOfRows()][calculatedSheet.getRow(0).getLastCellNum()];

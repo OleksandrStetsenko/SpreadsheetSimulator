@@ -1,5 +1,6 @@
 package home.stetsenko.processing;
 
+import home.stetsenko.exceptions.CellCalculationException;
 import home.stetsenko.model.cell.*;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
@@ -39,17 +40,26 @@ public class SheetProcessor {
 
                 } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
 
-                    ReturnedTypeValue result = getCellResult(sheet, cell);
-                    ReturnedTypeValue.Type type = result.getType();
-                    if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(type)) {
-                        cell.setCellType(CellType.CELL_TYPE_NUMERIC);
-                        cell.getCellValue().setNumericValue(result.getNumericValue());
-                        cell.setCalculated(true);
-                    } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(type)) {
-                        cell.setCellType(CellType.CELL_TYPE_STRING);
-                        cell.getCellValue().setTextValue(result.getTextValue());
+                    ReturnedTypeValue result = null;
+                    try {
+                        result = getCellResult(sheet, cell);
+                        ReturnedTypeValue.Type type = result.getType();
+                        if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(type)) {
+                            cell.setCellType(CellType.CELL_TYPE_NUMERIC);
+                            cell.getCellValue().setNumericValue(result.getNumericValue());
+                            cell.setCalculated(true);
+                        } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(type)) {
+                            cell.setCellType(CellType.CELL_TYPE_STRING);
+                            cell.getCellValue().setTextValue(result.getTextValue());
+                            cell.setCalculated(true);
+                        }
+                    } catch (CellCalculationException e) {
+                        ExpressionError expressionError = e.getExpressionError();
+                        cell.setCellType(CellType.CELL_TYPE_ERROR);
+                        cell.getCellValue().setCellErrorValue(expressionError);
                         cell.setCalculated(true);
                     }
+
 
                 }
             }
@@ -60,7 +70,7 @@ public class SheetProcessor {
         return sheet;
     }
 
-    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell) {
+    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell) throws CellCalculationException {
 
         int result = 0;
 
@@ -123,7 +133,7 @@ public class SheetProcessor {
         return new ReturnedTypeValue(result);
     }
 
-    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) {
+    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) throws CellCalculationException {
 
         TermType leftTermType = leftTerm.getTermType();
         TermType rightTermType = rightTerm.getTermType();
@@ -143,7 +153,7 @@ public class SheetProcessor {
 
     }
 
-    private int getTermValue(Sheet sheet, Term term, TermType termType) {
+    private int getTermValue(Sheet sheet, Term term, TermType termType) throws CellCalculationException {
         int value = 0;
 
         if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
@@ -151,7 +161,9 @@ public class SheetProcessor {
             Cell cell = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
             CellType cellType = cell.getCellType();
             if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
-                value = cell.getCellValue().getNumericValue();
+
+                return cell.getCellValue().getNumericValue();
+
             } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
                 ExpressionValue expressionValue = cell.getCellValue().getExpressionValue();
 
@@ -165,7 +177,11 @@ public class SheetProcessor {
                 cell.getCellValue().setNumericValue(value);
                 cell.setCellType(CellType.CELL_TYPE_NUMERIC);
                 cell.setCalculated(true);
+            } else if (CellType.CELL_TYPE_BLANK.equals(cellType) || CellType.CELL_TYPE_BLANK.equals(cellType)) {
+                throw new CellCalculationException(ExpressionError.REF, "unsupported");
             }
+        } else if (TermType.TERM_TYPE_NUMERIC.equals(termType)) {
+            return term.getNumericValue();
         }
         return value;
     }

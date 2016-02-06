@@ -21,7 +21,7 @@ public class Main {
         try {
 
             ClassLoader classLoader = (Main.class).getClassLoader();
-            File file = new File(classLoader.getResource("example1.txt").getFile());
+            File file = new File(classLoader.getResource("example0.txt").getFile());
             stdin = new Scanner(file);
             //stdin = new Scanner(new BufferedInputStream(System.in));
             SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
