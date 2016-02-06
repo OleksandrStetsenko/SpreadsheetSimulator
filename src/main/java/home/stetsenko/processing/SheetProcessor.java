@@ -18,7 +18,7 @@ public class SheetProcessor {
 
     public Sheet process(Sheet sheet) {
 
-        LOGGER.debug("=== Start processing cells ===");
+        LOGGER.debug("=========== Start processing cells ===========");
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
@@ -28,10 +28,10 @@ public class SheetProcessor {
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 LOGGER.debug("Cell to be processed = {}", cell);
+
                 CellType cellType = cell.getCellType();
-                if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
-                    cell.setCalculated(true);
-                } else if (CellType.CELL_TYPE_STRING.equals(cellType)) {
+                //processed should be only expressions and strings
+                if (CellType.CELL_TYPE_STRING.equals(cellType)) {
 
                     CellValue cellValue = cell.getCellValue();
                     cellValue.setTextValue(CellParser.extractText(cellValue.getTextValue()));
@@ -39,32 +39,52 @@ public class SheetProcessor {
 
                 } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
 
-                    int result = getCellResult(sheet, cell);
-                    cell.setCellType(CellType.CELL_TYPE_NUMERIC);
-                    cell.getCellValue().setNumericValue(result);
-                    cell.setCalculated(true);
+                    ReturnedTypeValue result = getCellResult(sheet, cell);
+                    ReturnedTypeValue.Type type = result.getType();
+                    if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(type)) {
+                        cell.setCellType(CellType.CELL_TYPE_NUMERIC);
+                        cell.getCellValue().setNumericValue(result.getNumericValue());
+                        cell.setCalculated(true);
+                    } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(type)) {
+                        cell.setCellType(CellType.CELL_TYPE_STRING);
+                        cell.getCellValue().setTextValue(result.getTextValue());
+                        cell.setCalculated(true);
+                    }
 
                 }
             }
         }
 
-        LOGGER.debug("=== Start processing cells ===");
+        LOGGER.debug("=========== End processing cells ===========");
 
         return sheet;
     }
 
-    private int getCellResult(Sheet sheet, Cell cell) {
+    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell) {
 
         int result = 0;
 
         CellType cellType = cell.getCellType();
         if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
-            int numericValue = cell.getCellValue().getNumericValue();
-            cell.setCellType(CellType.CELL_TYPE_NUMERIC);
-            cell.getCellValue().setNumericValue(numericValue);
+
+            //do nothing, only return numeric value
+            ReturnedTypeValue returnedTypeValue = new ReturnedTypeValue(cell.getCellValue().getNumericValue());
             cell.setCalculated(true);
-            return numericValue;
+
+            return returnedTypeValue;
+
+        } else if (CellType.CELL_TYPE_STRING.equals(cellType)) {
+
+            //do nothing, only return string value
+            ReturnedTypeValue returnedTypeValue = new ReturnedTypeValue(cell.isCalculated() ?
+                    cell.getCellValue().getTextValue() : CellParser.extractText(cell.getCellValue().getTextValue()));
+
+            cell.setCalculated(true);
+
+            return returnedTypeValue;
+
         } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
+
             CellValue cellValue = cell.getCellValue();
             ExpressionValue expressionValue = cellValue.getExpressionValue();
             List<Term> termList = expressionValue.getTermList();
@@ -75,13 +95,20 @@ public class SheetProcessor {
                 Term term = termList.get(0);
                 TermType termType = term.getTermType();
                 if (TermType.TERM_TYPE_NUMERIC.equals(termType)) {
-                    return term.getNumericValue();
+                    return new ReturnedTypeValue(term.getNumericValue());
                 } else if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
                     CellReference cellReferenceValue = term.getCellReferenceValue();
                     Cell cell1 = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
-                    int cellResult = getCellResult(sheet, cell1);
-                    cell1.setCellType(CellType.CELL_TYPE_NUMERIC);
-                    cell1.getCellValue().setNumericValue(cellResult);
+                    ReturnedTypeValue cellResult = getCellResult(sheet, cell1);
+                    if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(cellResult)) {
+                        cell1.setCellType(CellType.CELL_TYPE_NUMERIC);
+                        cell1.getCellValue().setNumericValue(cellResult.getNumericValue());
+                        cell1.setCalculated(true);
+                    } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(cellResult)) {
+                        cell1.setCellType(CellType.CELL_TYPE_STRING);
+                        cell1.getCellValue().setTextValue(cellResult.getTextValue());
+                        cell1.setCalculated(true);
+                    }
                     return cellResult;
                 }
             }
@@ -93,7 +120,7 @@ public class SheetProcessor {
             }
         }
 
-        return result;
+        return new ReturnedTypeValue(result);
     }
 
     private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) {
@@ -141,6 +168,54 @@ public class SheetProcessor {
             }
         }
         return value;
+    }
+
+    static class ReturnedTypeValue {
+
+        private Type type;
+        private int numericValue;
+        private String textValue;
+
+        public ReturnedTypeValue(Type type, int numericValue, String textValue) {
+            this.type = type;
+            this.numericValue = numericValue;
+            this.textValue = textValue;
+        }
+
+        public ReturnedTypeValue(int numericValue) {
+            this.numericValue = numericValue;
+            this.type = Type.CELL_TYPE_NUMERIC;
+        }
+
+        public ReturnedTypeValue(String textValue) {
+            this.textValue = textValue;
+            this.type = Type.CELL_TYPE_STRING;
+        }
+
+        public Type getType() {
+            return type;
+        }
+
+        public int getNumericValue() {
+            return numericValue;
+        }
+
+        public String getTextValue() {
+            return textValue;
+        }
+
+        public enum Type {
+
+            CELL_TYPE_NUMERIC(0),
+            CELL_TYPE_STRING(1);
+
+            private int value;
+
+            Type(int value) {
+                this.value = value;
+            }
+        }
+
     }
 
 }

@@ -4,8 +4,16 @@ import home.stetsenko.model.row.Row;
 
 public interface Cell {
 
+    /**
+     * Check that sell has been calculated
+     * @return true if cell has been calculated
+     */
     boolean isCalculated();
 
+    /**
+     * Set cell calculated
+     * @param isCalculated
+     */
     void setCalculated(boolean isCalculated);
 
     /**
@@ -14,22 +22,26 @@ public interface Cell {
     Row getRow();
 
     /**
-     * @return cell reference
+     * Returns reference of this cell
+     * @see CellReference
      */
     CellReference getCellReference();
 
     /**
      * Set sell reference
+     * @see CellReference
      */
     void setCellReference(CellReference cellReference);
 
     /**
      * Set the cells type (numeric, formula or string).
+     * @see CellType
      */
     void setCellType(CellType cellType);
 
     /**
      * Return the cell type.
+     * @see CellType
      */
     CellType getCellType();
 
@@ -40,6 +52,7 @@ public interface Cell {
 
     /**
      * Get a int value for the cell
+     * @see CellValue
      */
     CellValue getCellValue();
 

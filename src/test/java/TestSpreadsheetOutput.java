@@ -18,32 +18,31 @@ import static org.junit.Assert.fail;
 public class TestSpreadsheetOutput {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestSpreadsheetOutput.class);
-    private Scanner stdin = null;
 
-    @Before
-    public void init() {
+    @Test
+    public void testSheetOutput() {
+
+        Scanner stdin = null;
         try {
             ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
             File file = new File(classLoader.getResource("example0.txt").getFile());
             stdin = new Scanner(file);
             LOGGER.debug("Scanner is initialized");
-        } catch (FileNotFoundException e) {
-            LOGGER.error(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND, e);
-            fail(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND);
-        }
-    }
 
-    @Test
-    public void testSheetOutput() {
-        SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
-        try {
+            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
+
             spreadsheetInputReader.readInput();
             Sheet sheet = spreadsheetInputReader.getSheet();
             assertNotNull("Array of cells is null", sheet);
             SpreadsheetUtils.printSheet(sheet);
+
+        } catch (FileNotFoundException e) {
+            LOGGER.error(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND, e);
+            fail(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND);
         } catch (IllegalInputFormatException e) {
             fail(e.getMessage());
         }
+
     }
 
 }
