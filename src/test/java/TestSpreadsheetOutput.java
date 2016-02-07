@@ -22,15 +22,16 @@ public class TestSpreadsheetOutput {
     public void testSheetOutput() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example0.txt").getFile());
 
         //finally is not needed
         try (Scanner stdin = new Scanner(file)) {
 
             LOGGER.debug("Scanner is initialized");
-            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
+            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader();
 
-            spreadsheetInputReader.readInput();
+            spreadsheetInputReader.readInput(stdin);
             Sheet sheet = spreadsheetInputReader.getSheet();
             assertNotNull("Array of cells is null", sheet);
             SpreadsheetUtils.printSheet(sheet);

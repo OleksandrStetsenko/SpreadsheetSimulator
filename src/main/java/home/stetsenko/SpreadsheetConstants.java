@@ -13,9 +13,8 @@ public class SpreadsheetConstants {
     public static final String MESSAGE_NON_EXISTING_CELL_REF = "Reference to cell is not existed";
     public static final String MESSAGE_NO_LENGTH_OR_HEIGHT = "There are no height or length of table";
     public static final String MESSAGE_WRONG_TYPE_OF_COLNUM_ROWNUM = "Wrong type of input row num or col num";
-    public static final String MESSAGE_ACTUAL_NUM_ROWS_MORE_EXPECTED = "Actual number of rows is more than expected";
-    public static final String MESSAGE_ACTUAL_NUM_ROWS_LESS_EXPECTED = "Actual number of rows is less than expected";
-    public static final String MESSAGE_ACT_COL_NOT_EQUAL_EXP = "Actual number of columns is not equal to expected";
+    public static final String MESSAGE_ACTUAL_ROWS_NOT_EQUAL_EXP = "Actual number of rows is not equal expected";
+    public static final String MESSAGE_ACTUAL_COL_NOT_EQUAL_EXP = "Actual number of columns is not equal to expected";
 
     //patterns
     /**

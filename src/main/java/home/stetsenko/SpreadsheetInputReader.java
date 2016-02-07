@@ -5,6 +5,7 @@ import home.stetsenko.model.cell.*;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
 import home.stetsenko.model.sheet.SheetImpl;
+import home.stetsenko.processing.SheetProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,15 +17,13 @@ public class SpreadsheetInputReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpreadsheetInputReader.class);
 
     private Sheet sheet;
-    private Scanner stdin;
 
-    public SpreadsheetInputReader(Scanner stdin) {
-        this.stdin = stdin;
+    public SpreadsheetInputReader() {
     }
 
-    public void readInput() throws IllegalInputFormatException {
+    public void readInput(Scanner stdin) throws IllegalInputFormatException {
 
-        if (stdin.hasNextLine()) {
+        while (stdin.hasNextLine()) {
 
             String[] values = stdin.nextLine().split(SpreadsheetConstants.SEPARATOR);
             if (values.length != 2) {
@@ -32,8 +31,8 @@ public class SpreadsheetInputReader {
                 throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_NO_LENGTH_OR_HEIGHT);
             }
 
-            int rowNum = 0;
-            int colNum = 0;
+            int rowNum;
+            int colNum;
             try {
                 rowNum = Integer.parseInt(values[0]);
                 colNum = Integer.parseInt(values[1]);
@@ -45,26 +44,22 @@ public class SpreadsheetInputReader {
 
             sheet = new SheetImpl();
             int lineIndex = 0;
-            while (stdin.hasNextLine() || lineIndex < rowNum) {
-
-                if (lineIndex >= rowNum) {
-                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_MORE_EXPECTED);
-                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_MORE_EXPECTED);
-                }
+            //we use System.in and it is an infinite input stream
+            while (lineIndex < rowNum) {
 
                 String line;
                 try {
                     line = stdin.nextLine();
                 } catch (NoSuchElementException e) {
-                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_LESS_EXPECTED);
-                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_LESS_EXPECTED);
+                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACTUAL_ROWS_NOT_EQUAL_EXP);
+                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACTUAL_ROWS_NOT_EQUAL_EXP);
                 }
 
                 String[] lineValues = line.split(SpreadsheetConstants.SEPARATOR, -1);
 
                 if (colNum != lineValues.length) {
-                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACT_COL_NOT_EQUAL_EXP);
-                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACT_COL_NOT_EQUAL_EXP);
+                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACTUAL_COL_NOT_EQUAL_EXP);
+                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACTUAL_COL_NOT_EQUAL_EXP);
                 }
 
                 Row row = sheet.createRow(lineIndex);
@@ -97,6 +92,14 @@ public class SpreadsheetInputReader {
 
                 }
                 lineIndex++;
+
+                if (lineIndex == rowNum) {
+                    //print before calculation
+                    SpreadsheetUtils.printSheet(sheet);
+
+                    //print after calculation
+                    SpreadsheetUtils.printSheet(new SheetProcessor().process(sheet));
+                }
             }
         }
 

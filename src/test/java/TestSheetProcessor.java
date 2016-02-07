@@ -27,7 +27,8 @@ public class TestSheetProcessor {
          public void test_baseExample() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
-        @SuppressWarnings("ConstantConditions") File file = new File(classLoader.getResource("example0.txt").getFile());
+        @SuppressWarnings("ConstantConditions")
+        File file = new File(classLoader.getResource("example0.txt").getFile());
 
         String[][] expectedArray = new String[][] {
                 {"12", "-4", "3", "Sample"},
@@ -43,6 +44,7 @@ public class TestSheetProcessor {
     public void test_differentTypesOperationProcessing() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example1.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -57,6 +59,7 @@ public class TestSheetProcessor {
     public void test_stringRefs() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example2.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -71,6 +74,7 @@ public class TestSheetProcessor {
     public void test_blankValues() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example3.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -85,6 +89,7 @@ public class TestSheetProcessor {
          public void test_divZero() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example4.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -99,6 +104,7 @@ public class TestSheetProcessor {
     public void test_refToErrorRef() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example5.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -115,6 +121,7 @@ public class TestSheetProcessor {
     public void test_simpleCalculation() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example6.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -129,6 +136,7 @@ public class TestSheetProcessor {
     public void test_nonExistingRef() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example7.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -143,6 +151,7 @@ public class TestSheetProcessor {
     public void test_circularReferences() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        @SuppressWarnings("ConstantConditions")
         File file = new File(classLoader.getResource("example8.txt").getFile());
 
         String[][] expectedArray = new String[][] {
@@ -160,8 +169,8 @@ public class TestSheetProcessor {
 
             //stdin = new Scanner(file);
             LOGGER.debug("Scanner is initialized");
-            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
-            spreadsheetInputReader.readInput();
+            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader();
+            spreadsheetInputReader.readInput(stdin);
 
             Sheet sheet = spreadsheetInputReader.getSheet();
 

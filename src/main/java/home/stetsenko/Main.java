@@ -1,14 +1,10 @@
 package home.stetsenko;
 
 import home.stetsenko.exceptions.IllegalInputFormatException;
-import home.stetsenko.model.sheet.Sheet;
-import home.stetsenko.processing.SheetProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Main {
@@ -17,27 +13,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //for testing:
-        ClassLoader classLoader = (Main.class).getClassLoader();
-        File file = new File(classLoader.getResource("example0.txt").getFile());
-        //You can find the detailed tests is src/test/java
+        try (Scanner stdin = new Scanner(new BufferedInputStream(System.in))) {
 
-        //finally is not needed
-        //Scanner stdin = new Scanner(new BufferedInputStream(System.in));
-        try (Scanner stdin = new Scanner(file)) {
+            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader();
+            spreadsheetInputReader.readInput(stdin);
 
-            SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
-            spreadsheetInputReader.readInput();
-            Sheet sheet = spreadsheetInputReader.getSheet();
-
-            //print before calculation
-            SpreadsheetUtils.printSheet(sheet);
-
-            //print after calculation
-            SpreadsheetUtils.printSheet(new SheetProcessor().process(sheet));
-
-        } catch (FileNotFoundException e) {
-            LOGGER.error(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND, e);
         } catch (IllegalInputFormatException e1) {
             LOGGER.error(e1.getMessage());
         }
