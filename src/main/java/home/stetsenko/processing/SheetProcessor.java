@@ -137,12 +137,7 @@ public class SheetProcessor {
 
             //if expression has operations, do calculations
             for (int i = 0; i < operationList.size(); i++) {
-                Term leftTerm;
-                if (i == 0) {
-                    leftTerm = termList.get(i);
-                } else {
-                    leftTerm = new Term(String.valueOf(result));
-                }
+                Term leftTerm = (i==0) ? termList.get(i) : new Term(String.valueOf(result));
                 Term rightTerm = termList.get(i+1);
                 result = calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
             }
@@ -164,14 +159,21 @@ public class SheetProcessor {
             return operationProcessor.calculate(leftTerm.getNumericValue(), rightTerm.getNumericValue());
         }
 
-        int leftValue = getTermValue(sheet, leftTerm, leftTermType);
-        int rightValue = getTermValue(sheet, rightTerm, rightTermType);
+        ReturnedTypeValue leftValue = getTermValue(sheet, leftTerm, leftTermType);
+        ReturnedTypeValue rightValue = getTermValue(sheet, rightTerm, rightTermType);
 
-        return operationProcessor.calculate(leftValue, rightValue);
+        //calculation can be processed only with numeric values
+        //calculation with text values is unsupported
+        if ( ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(leftValue.getType())
+                || ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(rightValue.getType()) ) {
+            throw new CellCalculationException(ExpressionError.REF, "text can be calculated");
+        }
+
+        return operationProcessor.calculate(leftValue.getNumericValue(), rightValue.getNumericValue());
 
     }
 
-    private int getTermValue(Sheet sheet, Term term, TermType termType) throws CellCalculationException, NonExistingReferenceException {
+    private ReturnedTypeValue getTermValue(Sheet sheet, Term term, TermType termType) throws CellCalculationException, NonExistingReferenceException {
         int value = 0;
 
         if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
@@ -180,7 +182,7 @@ public class SheetProcessor {
             CellType cellType = cell.getCellType();
             if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
 
-                return cell.getCellValue().getNumericValue();
+                return new ReturnedTypeValue(cell.getCellValue().getNumericValue());
 
             } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
                 ExpressionValue expressionValue = cell.getCellValue().getExpressionValue();
@@ -189,19 +191,24 @@ public class SheetProcessor {
                 List<String> operationList = expressionValue.getOperationList();
                 for (int i = 0; i < operationList.size(); i++) {
                     Term leftTerm1 = termList.get(i);
-                    Term rightTerm1 = termList.get(i+1);
+                    Term rightTerm1 = termList.get(i + 1);
                     value += calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
                 }
                 cell.getCellValue().setNumericValue(value);
                 cell.setCellType(CellType.CELL_TYPE_NUMERIC);
                 cell.setCalculated(true);
+            } else if (CellType.CELL_TYPE_STRING.equals(cellType)) {
+
+                return new ReturnedTypeValue(cell.isCalculated() ?
+                        cell.getCellValue().getTextValue() : CellParser.extractText(cell.getCellValue().getTextValue()));
+
             } else if (CellType.CELL_TYPE_BLANK.equals(cellType) || CellType.CELL_TYPE_ERROR.equals(cellType)) {
                 throw new CellCalculationException(ExpressionError.REF, "unsupported");
             }
         } else if (TermType.TERM_TYPE_NUMERIC.equals(termType)) {
-            return term.getNumericValue();
+            return new ReturnedTypeValue(term.getNumericValue());
         }
-        return value;
+        return new ReturnedTypeValue(value);
     }
 
     static class ReturnedTypeValue {

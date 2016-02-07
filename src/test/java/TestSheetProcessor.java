@@ -40,6 +40,20 @@ public class TestSheetProcessor {
     }
 
     @Test
+    public void test_differentTypesOperationProcessing() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example1.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"12", "#REF!", "Sample"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
+    @Test
     public void test_stringRefs() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();

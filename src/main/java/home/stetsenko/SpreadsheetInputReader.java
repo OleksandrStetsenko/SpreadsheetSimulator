@@ -32,6 +32,8 @@ public class SpreadsheetInputReader {
 
             int lineIndex = 0;
             sheet = new SheetImpl();
+            //todo: Currently the length and height are not considered. Add validation
+            //read input line by line
             while (stdin.hasNextLine()) {
                 String line = stdin.nextLine();
                 String[] lineValues = line.split(SpreadsheetConstants.SEPARATOR, -1);
