@@ -8,6 +8,7 @@ import home.stetsenko.model.sheet.SheetImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class SpreadsheetInputReader {
@@ -24,19 +25,47 @@ public class SpreadsheetInputReader {
     public void readInput() throws IllegalInputFormatException {
 
         if (stdin.hasNextLine()) {
+
             String[] values = stdin.nextLine().split(SpreadsheetConstants.SEPARATOR);
             if (values.length != 2) {
                 LOGGER.error(SpreadsheetConstants.MESSAGE_NO_LENGTH_OR_HEIGHT);
                 throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_NO_LENGTH_OR_HEIGHT);
             }
 
-            int lineIndex = 0;
+            int rowNum = 0;
+            int colNum = 0;
+            try {
+                rowNum = Integer.parseInt(values[0]);
+                colNum = Integer.parseInt(values[1]);
+                LOGGER.debug("Input row num = {}, input col num = {}", rowNum, colNum);
+            } catch (NumberFormatException e) {
+                LOGGER.error(SpreadsheetConstants.MESSAGE_WRONG_TYPE_OF_COLNUM_ROWNUM);
+                throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_WRONG_TYPE_OF_COLNUM_ROWNUM);
+            }
+
             sheet = new SheetImpl();
-            //todo: Currently the length and height are not considered. Add validation
-            //read input line by line
-            while (stdin.hasNextLine()) {
-                String line = stdin.nextLine();
+            int lineIndex = 0;
+            while (stdin.hasNextLine() || lineIndex < rowNum) {
+
+                if (lineIndex >= rowNum) {
+                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_MORE_EXPECTED);
+                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_MORE_EXPECTED);
+                }
+
+                String line;
+                try {
+                    line = stdin.nextLine();
+                } catch (NoSuchElementException e) {
+                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_LESS_EXPECTED);
+                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACTUAL_NUM_ROWS_LESS_EXPECTED);
+                }
+
                 String[] lineValues = line.split(SpreadsheetConstants.SEPARATOR, -1);
+
+                if (colNum != lineValues.length) {
+                    LOGGER.error(SpreadsheetConstants.MESSAGE_ACT_COL_NOT_EQUAL_EXP);
+                    throw new IllegalInputFormatException(SpreadsheetConstants.MESSAGE_ACT_COL_NOT_EQUAL_EXP);
+                }
 
                 Row row = sheet.createRow(lineIndex);
 

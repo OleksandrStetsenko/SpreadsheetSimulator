@@ -49,8 +49,7 @@ public class SpreadsheetUtils {
                 LOGGER.error(SpreadsheetConstants.MESSAGE_SHEET_CAN_BE_PRINTED);
             }
         } catch (NonExistingReferenceException e) {
-            //todo
-            LOGGER.error("");
+            LOGGER.error(SpreadsheetConstants.MESSAGE_NON_EXISTING_CELL_REF);
         }
     }
 

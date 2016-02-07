@@ -139,6 +139,20 @@ public class TestSheetProcessor {
 
     }
 
+    @Test
+    public void test_circularReferences() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example8.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"#CIRCULAR_REF!", "#REF!", "#REF!"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
     private void compareWithExpected(File file, String[][] expectedArray) {
 
         //finally is not needed

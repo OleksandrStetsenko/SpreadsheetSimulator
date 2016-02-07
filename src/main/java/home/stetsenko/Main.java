@@ -17,13 +17,15 @@ public class Main {
 
     public static void main(String[] args) {
 
+        //for testing:
         ClassLoader classLoader = (Main.class).getClassLoader();
-        File file = new File(classLoader.getResource("example1.txt").getFile());
+        File file = new File(classLoader.getResource("example0.txt").getFile());
+        //You can find the detailed tests is src/test/java
 
         //finally is not needed
+        //Scanner stdin = new Scanner(new BufferedInputStream(System.in));
         try (Scanner stdin = new Scanner(file)) {
 
-            //stdin = new Scanner(new BufferedInputStream(System.in));
             SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
             spreadsheetInputReader.readInput();
             Sheet sheet = spreadsheetInputReader.getSheet();

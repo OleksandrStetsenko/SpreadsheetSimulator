@@ -45,7 +45,6 @@ public class Term {
         } else if (termType == TermType.TERM_TYPE_NUMERIC) {
             this.numericValue = Integer.parseInt(numericGroup);
         }
-        //todo add calculation for error value
     }
 
     public TermType getTermType() {

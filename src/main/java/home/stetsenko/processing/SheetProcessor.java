@@ -10,8 +10,7 @@ import home.stetsenko.processing.operations.OperationProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class SheetProcessor {
 
@@ -32,7 +31,7 @@ public class SheetProcessor {
                 LOGGER.debug("Cell to be processed = {}", cell);
 
                 CellType cellType = cell.getCellType();
-                //processed should be only expressions and strings
+
                 if (CellType.CELL_TYPE_STRING.equals(cellType)) {
 
                     CellValue cellValue = cell.getCellValue();
@@ -44,7 +43,10 @@ public class SheetProcessor {
 
                     ReturnedTypeValue result;
                     try {
-                        result = getCellResult(sheet, cell);
+                        //for detecting circular references
+                        Set<CellReference> cellRefsChain = new HashSet<>();
+
+                        result = getCellResult(sheet, cell, cellRefsChain);
                         ReturnedTypeValue.Type type = result.getType();
                         if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(type)) {
                             cell.setCellType(CellType.CELL_TYPE_NUMERIC);
@@ -77,7 +79,13 @@ public class SheetProcessor {
         return sheet;
     }
 
-    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell) throws CellCalculationException, NonExistingReferenceException {
+    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell, Set<CellReference> cellRefsChain)
+            throws CellCalculationException, NonExistingReferenceException {
+
+        if ( !cellRefsChain.add(cell.getCellReference()) ) {
+            LOGGER.error("Circular reference detected");
+            throw new CellCalculationException(ExpressionError.CIRCULAR_REF, "circular reference");
+        }
 
         int result = 0;
 
@@ -121,16 +129,15 @@ public class SheetProcessor {
                 } else if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
                     CellReference cellReferenceValue = term.getCellReferenceValue();
                     Cell cell1 = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
-                    ReturnedTypeValue cellResult = getCellResult(sheet, cell1);
+                    ReturnedTypeValue cellResult = getCellResult(sheet, cell1, cellRefsChain);
                     if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(cellResult.getType())) {
                         cell1.setCellType(CellType.CELL_TYPE_NUMERIC);
                         cell1.getCellValue().setNumericValue(cellResult.getNumericValue());
-                        cell1.setCalculated(true);
                     } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(cellResult.getType())) {
                         cell1.setCellType(CellType.CELL_TYPE_STRING);
                         cell1.getCellValue().setTextValue(cellResult.getTextValue());
-                        cell1.setCalculated(true);
                     }
+                    cell1.setCalculated(true);
                     return cellResult;
                 }
             }
@@ -139,14 +146,15 @@ public class SheetProcessor {
             for (int i = 0; i < operationList.size(); i++) {
                 Term leftTerm = (i==0) ? termList.get(i) : new Term(String.valueOf(result));
                 Term rightTerm = termList.get(i+1);
-                result = calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
+                result = calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i), cellRefsChain);
             }
         }
 
         return new ReturnedTypeValue(result);
     }
 
-    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) throws CellCalculationException, NonExistingReferenceException {
+    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation,
+                                   Set<CellReference> cellRefsChain) throws CellCalculationException, NonExistingReferenceException {
 
         TermType leftTermType = leftTerm.getTermType();
         TermType rightTermType = rightTerm.getTermType();
@@ -159,8 +167,8 @@ public class SheetProcessor {
             return operationProcessor.calculate(leftTerm.getNumericValue(), rightTerm.getNumericValue());
         }
 
-        ReturnedTypeValue leftValue = getTermValue(sheet, leftTerm, leftTermType);
-        ReturnedTypeValue rightValue = getTermValue(sheet, rightTerm, rightTermType);
+        ReturnedTypeValue leftValue = getTermValue(sheet, leftTerm, leftTermType, cellRefsChain);
+        ReturnedTypeValue rightValue = getTermValue(sheet, rightTerm, rightTermType, cellRefsChain);
 
         //calculation can be processed only with numeric values
         //calculation with text values is unsupported
@@ -173,12 +181,20 @@ public class SheetProcessor {
 
     }
 
-    private ReturnedTypeValue getTermValue(Sheet sheet, Term term, TermType termType) throws CellCalculationException, NonExistingReferenceException {
+    private ReturnedTypeValue getTermValue(Sheet sheet, Term term, TermType termType, Set<CellReference> cellRefsChain)
+            throws CellCalculationException, NonExistingReferenceException {
+
         int value = 0;
 
         if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
             CellReference cellReferenceValue = term.getCellReferenceValue();
             Cell cell = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
+
+            if ( !cellRefsChain.add(cell.getCellReference()) ) {
+                LOGGER.error("Circular reference detected");
+                throw new CellCalculationException(ExpressionError.CIRCULAR_REF, "circular reference");
+            }
+
             CellType cellType = cell.getCellType();
             if (CellType.CELL_TYPE_NUMERIC.equals(cellType)) {
 
@@ -192,7 +208,7 @@ public class SheetProcessor {
                 for (int i = 0; i < operationList.size(); i++) {
                     Term leftTerm1 = termList.get(i);
                     Term rightTerm1 = termList.get(i + 1);
-                    value += calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i));
+                    value += calculateRecursive(sheet, leftTerm1, rightTerm1, operationList.get(i), cellRefsChain);
                 }
                 cell.getCellValue().setNumericValue(value);
                 cell.setCellType(CellType.CELL_TYPE_NUMERIC);
@@ -216,12 +232,6 @@ public class SheetProcessor {
         private Type type;
         private int numericValue;
         private String textValue;
-
-        public ReturnedTypeValue(Type type, int numericValue, String textValue) {
-            this.type = type;
-            this.numericValue = numericValue;
-            this.textValue = textValue;
-        }
 
         public ReturnedTypeValue(int numericValue) {
             this.numericValue = numericValue;
