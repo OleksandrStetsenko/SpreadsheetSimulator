@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ExpressionValue {
@@ -47,9 +48,7 @@ public class ExpressionValue {
         this.operationList = new ArrayList<String>();
 
         String[] strings = SpreadsheetConstants.PATTERN_TERM.split(expression);
-        for (int i = 1; i < strings.length; i++) {
-            operationList.add(strings[i]);
-        }
+        operationList.addAll(Arrays.asList(strings).subList(1, strings.length));
         LOGGER.debug("Operations from string = {}", operationList);
     }
 

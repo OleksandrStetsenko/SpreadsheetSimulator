@@ -27,7 +27,7 @@ public class TestSheetProcessor {
          public void test_baseExample() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
-        File file = new File(classLoader.getResource("example0.txt").getFile());
+        @SuppressWarnings("ConstantConditions") File file = new File(classLoader.getResource("example0.txt").getFile());
 
         String[][] expectedArray = new String[][] {
                 {"12", "-4", "3", "Sample"},

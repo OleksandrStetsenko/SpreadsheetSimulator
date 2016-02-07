@@ -13,7 +13,7 @@ public enum ExpressionError {
     CIRCULAR_REF("#CIRCULAR_REF!"),
 
     /**
-     * Unknown reference detected
+     * Unknown cell type detected
      */
     UNKNOWN_CELL_TYPE("#UNKNOWN_CELL_TYPE!"),
 

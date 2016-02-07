@@ -36,12 +36,13 @@ public class SheetProcessor {
                 if (CellType.CELL_TYPE_STRING.equals(cellType)) {
 
                     CellValue cellValue = cell.getCellValue();
-                    cellValue.setTextValue(CellParser.extractText(cellValue.getTextValue()));
+                    cellValue.setTextValue(cell.isCalculated() ?
+                            cellValue.getTextValue() : CellParser.extractText(cellValue.getTextValue()));
                     cell.setCalculated(true);
 
                 } else if (CellType.CELL_TYPE_EXPRESSION.equals(cellType)) {
 
-                    ReturnedTypeValue result = null;
+                    ReturnedTypeValue result;
                     try {
                         result = getCellResult(sheet, cell);
                         ReturnedTypeValue.Type type = result.getType();
@@ -121,11 +122,11 @@ public class SheetProcessor {
                     CellReference cellReferenceValue = term.getCellReferenceValue();
                     Cell cell1 = sheet.getRow(cellReferenceValue.getRowIndex()).getCell(cellReferenceValue.getColIndex());
                     ReturnedTypeValue cellResult = getCellResult(sheet, cell1);
-                    if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(cellResult)) {
+                    if (ReturnedTypeValue.Type.CELL_TYPE_NUMERIC.equals(cellResult.getType())) {
                         cell1.setCellType(CellType.CELL_TYPE_NUMERIC);
                         cell1.getCellValue().setNumericValue(cellResult.getNumericValue());
                         cell1.setCalculated(true);
-                    } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(cellResult)) {
+                    } else if (ReturnedTypeValue.Type.CELL_TYPE_STRING.equals(cellResult.getType())) {
                         cell1.setCellType(CellType.CELL_TYPE_STRING);
                         cell1.getCellValue().setTextValue(cellResult.getTextValue());
                         cell1.setCalculated(true);

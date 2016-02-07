@@ -18,7 +18,7 @@ public class Main {
     public static void main(String[] args) {
 
         ClassLoader classLoader = (Main.class).getClassLoader();
-        File file = new File(classLoader.getResource("example1.txt").getFile());
+        File file = new File(classLoader.getResource("example2.txt").getFile());
 
         //finally is not needed
         try (Scanner stdin = new Scanner(file)) {

@@ -35,7 +35,6 @@ public class RowImpl implements Row {
     @Override
     public Cell createCell(int colIndex) {
         CellImpl cell = new CellImpl(this);
-        //todo: sets blank sell type
         cell.setCellType(CellType.CELL_TYPE_BLANK);
         cells.put(colIndex, cell);
         return cell;
