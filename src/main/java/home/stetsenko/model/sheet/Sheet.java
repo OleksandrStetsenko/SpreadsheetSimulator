@@ -1,5 +1,6 @@
 package home.stetsenko.model.sheet;
 
+import home.stetsenko.exceptions.NonExistingReferenceException;
 import home.stetsenko.model.row.Row;
 
 import java.util.Iterator;
@@ -14,7 +15,7 @@ public interface Sheet {
     /**
      * Returns the row
      */
-    Row getRow(int rowIndex);
+    Row getRow(int rowIndex) throws NonExistingReferenceException;
 
     /**
      * Returns number of rows

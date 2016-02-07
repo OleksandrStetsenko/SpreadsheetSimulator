@@ -1,5 +1,7 @@
 package home.stetsenko.model.sheet;
 
+import home.stetsenko.exceptions.NonExistingReferenceException;
+import home.stetsenko.model.cell.ExpressionError;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.row.RowImpl;
 import org.slf4j.Logger;
@@ -21,7 +23,10 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public Row getRow(int rowIndex) {
+    public Row getRow(int rowIndex) throws NonExistingReferenceException {
+        if ( ! rows.containsKey(rowIndex) ) {
+            throw new NonExistingReferenceException(ExpressionError.NON_EXIST_REF, "ref is not existed");
+        }
         return rows.get(rowIndex);
     }
 

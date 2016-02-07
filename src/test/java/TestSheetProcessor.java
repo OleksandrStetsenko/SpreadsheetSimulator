@@ -2,12 +2,12 @@ import home.stetsenko.SpreadsheetConstants;
 import home.stetsenko.SpreadsheetInputReader;
 import home.stetsenko.SpreadsheetUtils;
 import home.stetsenko.exceptions.IllegalInputFormatException;
+import home.stetsenko.exceptions.NonExistingReferenceException;
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
 import home.stetsenko.processing.SheetProcessor;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class TestSheetProcessor {
 
         String[][] expectedArray = new String[][] {
                 {"12", "-4", "3", "Sample"},
-                {"-4", "16", "-4", "Spread"},
+                {"4", "-16", "-4", "Spread"},
                 {"Test", "1", "5", "Sheet"}
         };
 
@@ -68,7 +68,7 @@ public class TestSheetProcessor {
     }
 
     @Test
-    public void test_divZero() {
+         public void test_divZero() {
 
         ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
         File file = new File(classLoader.getResource("example4.txt").getFile());
@@ -81,16 +81,60 @@ public class TestSheetProcessor {
 
     }
 
+    @Test
+    public void test_refToErrorRef() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example5.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"0", "#DIV/0!", "#REF!"},
+                {"1", "#DIV/0!", "#REF!"},
+                {"#REF!", "0", "7"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
+    @Test
+    public void test_simpleCalculation() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example6.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"1", "2", "5"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
+    @Test
+    public void test_nonExistingRef() {
+
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example7.txt").getFile());
+
+        String[][] expectedArray = new String[][] {
+                {"1", "#NON_EXIST_REF!", "#REF!"}
+        };
+
+        compareWithExpected(file, expectedArray);
+
+    }
+
     private void compareWithExpected(File file, String[][] expectedArray) {
 
-        Scanner stdin = null;
-        try {
+        //finally is not needed
+        try (Scanner stdin = new Scanner(file)) {
 
-            stdin = new Scanner(file);
+            //stdin = new Scanner(file);
             LOGGER.debug("Scanner is initialized");
             SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
-
             spreadsheetInputReader.readInput();
+
             Sheet sheet = spreadsheetInputReader.getSheet();
 
             SpreadsheetUtils.printSheet(sheet);
@@ -120,14 +164,9 @@ public class TestSheetProcessor {
         } catch (FileNotFoundException e) {
             LOGGER.error(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND, e);
             fail(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND);
-        } catch (IllegalInputFormatException e) {
+        } catch (IllegalInputFormatException | NonExistingReferenceException e) {
             LOGGER.error(e.getMessage(), e);
             fail(e.getMessage());
-        } finally {
-            if (stdin != null) {
-                stdin.close();
-                LOGGER.debug("Scanner has been closed");
-            }
         }
     }
 

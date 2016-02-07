@@ -17,12 +17,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Scanner stdin = null;
-        try {
+        ClassLoader classLoader = (Main.class).getClassLoader();
+        File file = new File(classLoader.getResource("example1.txt").getFile());
 
-            ClassLoader classLoader = (Main.class).getClassLoader();
-            File file = new File(classLoader.getResource("example0.txt").getFile());
-            stdin = new Scanner(file);
+        //finally is not needed
+        try (Scanner stdin = new Scanner(file)) {
+
             //stdin = new Scanner(new BufferedInputStream(System.in));
             SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
             spreadsheetInputReader.readInput();
@@ -38,11 +38,6 @@ public class Main {
             LOGGER.error(SpreadsheetConstants.MESSAGE_FILE_WAS_NOT_FOUND, e);
         } catch (IllegalInputFormatException e1) {
             LOGGER.error(e1.getMessage());
-        } finally {
-            if (stdin != null) {
-                stdin.close();
-                LOGGER.debug("Scanner has been closed.");
-            }
         }
     }
 

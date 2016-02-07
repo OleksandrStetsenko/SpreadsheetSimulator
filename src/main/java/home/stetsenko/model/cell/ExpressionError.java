@@ -3,7 +3,7 @@ package home.stetsenko.model.cell;
 public enum ExpressionError {
 
     /**
-     * When cell reference is invalid
+     * When cell reference is invalid or operation is not supported
      */
     REF("#REF!"),
 
@@ -20,7 +20,12 @@ public enum ExpressionError {
     /**
      * Div 0
      */
-    DIV_0("#DIV/0!");
+    DIV_0("#DIV/0!"),
+
+    /**
+     * Non existing reference
+     */
+    NON_EXIST_REF("#NON_EXIST_REF!");
 
     private String value;
 

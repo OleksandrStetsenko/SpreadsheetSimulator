@@ -1,9 +1,8 @@
-import home.stetsenko.exceptions.IllegalInputFormatException;
 import home.stetsenko.SpreadsheetConstants;
 import home.stetsenko.SpreadsheetInputReader;
 import home.stetsenko.SpreadsheetUtils;
+import home.stetsenko.exceptions.IllegalInputFormatException;
 import home.stetsenko.model.sheet.Sheet;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +21,13 @@ public class TestSpreadsheetOutput {
     @Test
     public void testSheetOutput() {
 
-        Scanner stdin = null;
-        try {
-            ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
-            File file = new File(classLoader.getResource("example0.txt").getFile());
-            stdin = new Scanner(file);
-            LOGGER.debug("Scanner is initialized");
+        ClassLoader classLoader = (TestSpreadsheetOutput.class).getClassLoader();
+        File file = new File(classLoader.getResource("example0.txt").getFile());
 
+        //finally is not needed
+        try (Scanner stdin = new Scanner(file)) {
+
+            LOGGER.debug("Scanner is initialized");
             SpreadsheetInputReader spreadsheetInputReader = new SpreadsheetInputReader(stdin);
 
             spreadsheetInputReader.readInput();

@@ -1,8 +1,10 @@
 package home.stetsenko.model.row;
 
+import home.stetsenko.exceptions.NonExistingReferenceException;
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.cell.CellImpl;
 import home.stetsenko.model.cell.CellType;
+import home.stetsenko.model.cell.ExpressionError;
 import home.stetsenko.model.sheet.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +60,10 @@ public class RowImpl implements Row {
     }
 
     @Override
-    public Cell getCell(int colIndex) {
+    public Cell getCell(int colIndex) throws NonExistingReferenceException {
+        if ( ! cells.containsKey(colIndex) ) {
+            throw new NonExistingReferenceException(ExpressionError.NON_EXIST_REF, "ref is not existed");
+        }
         return cells.get(colIndex);
     }
 

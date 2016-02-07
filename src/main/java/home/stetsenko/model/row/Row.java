@@ -1,5 +1,6 @@
 package home.stetsenko.model.row;
 
+import home.stetsenko.exceptions.NonExistingReferenceException;
 import home.stetsenko.model.cell.Cell;
 import home.stetsenko.model.cell.CellType;
 import home.stetsenko.model.sheet.Sheet;
@@ -37,7 +38,7 @@ public interface Row {
     /**
      * Get the cell representing a given column
      */
-    Cell getCell(int colIndex);
+    Cell getCell(int colIndex) throws NonExistingReferenceException;
 
     /**
      * Gets the index of the last cell contained in this row <b>PLUS ONE</b>.

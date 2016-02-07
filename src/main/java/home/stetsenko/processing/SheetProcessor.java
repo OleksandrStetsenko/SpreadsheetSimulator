@@ -1,6 +1,7 @@
 package home.stetsenko.processing;
 
 import home.stetsenko.exceptions.CellCalculationException;
+import home.stetsenko.exceptions.NonExistingReferenceException;
 import home.stetsenko.model.cell.*;
 import home.stetsenko.model.row.Row;
 import home.stetsenko.model.sheet.Sheet;
@@ -58,6 +59,11 @@ public class SheetProcessor {
                         cell.setCellType(CellType.CELL_TYPE_ERROR);
                         cell.getCellValue().setCellErrorValue(expressionError);
                         cell.setCalculated(true);
+                    } catch (NonExistingReferenceException e) {
+                        ExpressionError expressionError = e.getExpressionError();
+                        cell.setCellType(CellType.CELL_TYPE_ERROR);
+                        cell.getCellValue().setCellErrorValue(expressionError);
+                        cell.setCalculated(true);
                     }
 
 
@@ -70,7 +76,7 @@ public class SheetProcessor {
         return sheet;
     }
 
-    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell) throws CellCalculationException {
+    private ReturnedTypeValue getCellResult(Sheet sheet, Cell cell) throws CellCalculationException, NonExistingReferenceException {
 
         int result = 0;
 
@@ -82,6 +88,11 @@ public class SheetProcessor {
             cell.setCalculated(true);
 
             return returnedTypeValue;
+
+        } else if (CellType.CELL_TYPE_ERROR.equals(cellType)) {
+
+            //if current cell has reference to error cell, mark current cell as #REF!
+            throw new CellCalculationException(ExpressionError.REF, "cell has reference to error ref");
 
         } else if (CellType.CELL_TYPE_STRING.equals(cellType)) {
 
@@ -123,17 +134,23 @@ public class SheetProcessor {
                 }
             }
 
+            //if expression has operations, do calculations
             for (int i = 0; i < operationList.size(); i++) {
-                Term leftTerm = termList.get(i);
+                Term leftTerm;
+                if (i == 0) {
+                    leftTerm = termList.get(i);
+                } else {
+                    leftTerm = new Term(String.valueOf(result));
+                }
                 Term rightTerm = termList.get(i+1);
-                result += calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
+                result = calculateRecursive(sheet, leftTerm, rightTerm, operationList.get(i));
             }
         }
 
         return new ReturnedTypeValue(result);
     }
 
-    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) throws CellCalculationException {
+    private int calculateRecursive(Sheet sheet, Term leftTerm, Term rightTerm, String operation) throws CellCalculationException, NonExistingReferenceException {
 
         TermType leftTermType = leftTerm.getTermType();
         TermType rightTermType = rightTerm.getTermType();
@@ -153,7 +170,7 @@ public class SheetProcessor {
 
     }
 
-    private int getTermValue(Sheet sheet, Term term, TermType termType) throws CellCalculationException {
+    private int getTermValue(Sheet sheet, Term term, TermType termType) throws CellCalculationException, NonExistingReferenceException {
         int value = 0;
 
         if (TermType.TERM_TYPE_CELL_REFERENCE.equals(termType)) {
@@ -177,7 +194,7 @@ public class SheetProcessor {
                 cell.getCellValue().setNumericValue(value);
                 cell.setCellType(CellType.CELL_TYPE_NUMERIC);
                 cell.setCalculated(true);
-            } else if (CellType.CELL_TYPE_BLANK.equals(cellType) || CellType.CELL_TYPE_BLANK.equals(cellType)) {
+            } else if (CellType.CELL_TYPE_BLANK.equals(cellType) || CellType.CELL_TYPE_ERROR.equals(cellType)) {
                 throw new CellCalculationException(ExpressionError.REF, "unsupported");
             }
         } else if (TermType.TERM_TYPE_NUMERIC.equals(termType)) {
